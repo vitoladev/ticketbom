@@ -1,0 +1,24 @@
+{
+  "name": "ticketbom-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ticketbom-api/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "ticketbom-api:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "ticketbom-api:build:development"
+        },
+        "production": {
+          "buildTarget": "ticketbom-api:build:production"
+        }
+      }
+    }
+  }
+}
