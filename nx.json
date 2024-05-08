@@ -52,13 +52,13 @@
       }
     }
   ],
+  "nxCloudAccessToken": "M2M0MTIyOWEtYjk0ZC00ZGNlLWI3NzUtOGQ5NjQyYWYyN2E1fHJlYWQtd3JpdGU=",
   "generators": {
     "@nx/next": {
       "application": {
-        "style": "@emotion/styled",
+        "style": "tailwind",
         "linter": "eslint"
       }
     }
-  },
-  "nxCloudAccessToken": "M2M0MTIyOWEtYjk0ZC00ZGNlLWI3NzUtOGQ5NjQyYWYyN2E1fHJlYWQtd3JpdGU="
+  }
 }
