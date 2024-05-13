@@ -5,3 +5,5 @@ export * from './lib/ui/icons';
 export * from './lib/ui/input';
 export * from './lib/ui/label';
 export * from './lib/ui/separator';
+export * from './lib/ui/navigation-menu';
+export * from './lib/ui/avatar';
