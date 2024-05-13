@@ -1,5 +1,11 @@
+DO $$ BEGIN
+ CREATE TYPE "public"."ticket_status" AS ENUM('PENDING', 'RESERVED', 'CANCELLED');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "account" (
-	"userId" text NOT NULL,
+	"userId" uuid NOT NULL,
 	"type" text NOT NULL,
 	"provider" text NOT NULL,
 	"providerAccountId" text NOT NULL,
@@ -13,14 +19,34 @@ CREATE TABLE IF NOT EXISTS "account" (
 	CONSTRAINT "account_provider_providerAccountId_pk" PRIMARY KEY("provider","providerAccountId")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "events" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" varchar(256) NOT NULL,
+	"date" varchar,
+	"location" varchar(256),
+	"price" varchar(256),
+	"organizer_id" uuid NOT NULL,
+	"created_at" date DEFAULT now(),
+	"updated_at" date DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "session" (
 	"sessionToken" text PRIMARY KEY NOT NULL,
-	"userId" text NOT NULL,
+	"userId" uuid NOT NULL,
 	"expires" timestamp NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "tickets" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"event_id" uuid,
+	"user_id" uuid,
+	"status" "ticket_status" DEFAULT 'PENDING',
+	"created_at" date DEFAULT now(),
+	"updated_at" date DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user" (
-	"id" text PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY NOT NULL,
 	"name" text,
 	"email" text NOT NULL,
 	"emailVerified" timestamp,
@@ -34,9 +60,6 @@ CREATE TABLE IF NOT EXISTS "verificationToken" (
 	CONSTRAINT "verificationToken_identifier_token_pk" PRIMARY KEY("identifier","token")
 );
 --> statement-breakpoint
-DROP TABLE "users";--> statement-breakpoint
-ALTER TABLE "events" ALTER COLUMN "tickets_sold" SET DATA TYPE integer;--> statement-breakpoint
-ALTER TABLE "events" ALTER COLUMN "tickets_total" SET DATA TYPE integer;--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "account" ADD CONSTRAINT "account_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION

@@ -1,6 +1,6 @@
 {
-  "id": "1bf574da-ba66-4237-acd5-f88510337c6a",
-  "prevId": "6609aecc-4533-4e79-ac20-992220a6770d",
+  "id": "e237efa2-395d-474a-9d07-571e1f373c6f",
+  "prevId": "bfc77bc3-1461-489e-b075-893127025140",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -133,24 +133,6 @@
         "price": {
           "name": "price",
           "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "tickets_available": {
-          "name": "tickets_available",
-          "type": "varchar(256)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "tickets_sold": {
-          "name": "tickets_sold",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "tickets_total": {
-          "name": "tickets_total",
-          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -357,15 +339,6 @@
         "PENDING",
         "RESERVED",
         "CANCELLED"
-      ]
-    },
-    "public.user_type": {
-      "name": "user_type",
-      "schema": "public",
-      "values": [
-        "ADMIN",
-        "PARTICIPANT",
-        "ORGANIZER"
       ]
     }
   },

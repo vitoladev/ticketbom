@@ -16,9 +16,9 @@ import {
 import type { AdapterAccountType } from 'next-auth/adapters';
 
 export const users = pgTable('user', {
-  id: uuid('id')
+  id: text('id')
     .primaryKey()
-    .default(sql`uuid_generate_v4()`),
+    .$defaultFn(() => crypto.randomUUID()),
   name: text('name'),
   email: text('email').notNull(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
