@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DrizzlePGModule } from '../common/drizzle/drizzle.module';
-import * as schema from '../common/database/schema';
+import * as schema from '@ticketbom/database';
 import { UsersModule } from '../users/users.module';
 
 @Module({

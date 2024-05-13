@@ -2,8 +2,8 @@ import 'dotenv/config';
 import { Config } from 'drizzle-kit';
 
 export default {
-  schema: './apps/ticketbom-api/src/common/database/schema.ts',
-  out: './apps/ticketbom-api/src/common/database/migrations',
+  schema: './libs/database/src/lib/schema.ts',
+  out: './libs/database/src/lib/migrations',
   dialect: 'postgresql',
   dbCredentials: {
     host: process.env.DB_HOST || 'localhost',
