@@ -1,19 +1,7 @@
-import { sql } from 'drizzle-orm';
-import {
-  pgTable,
-  serial,
-  varchar,
-  date,
-  uuid,
-  pgEnum,
-  integer,
-  primaryKey,
-  text,
-  timestamp,
-} from 'drizzle-orm/pg-core';
+import { relations, sql } from 'drizzle-orm';
+import { date, integer, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 
 // it is a ticket buying system focused on sports events such as football, basketball, etc
-import type { AdapterAccountType } from 'next-auth/adapters';
 
 export const users = pgTable('user', {
   id: text('id')
@@ -22,83 +10,79 @@ export const users = pgTable('user', {
   name: text('name'),
   email: text('email').notNull(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
-  image: text('image'),
+  image: text('image')
 });
 
-export const accounts = pgTable(
-  'account',
-  {
-    userId: text('userId')
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    type: text('type').$type<AdapterAccountType>().notNull(),
-    provider: text('provider').notNull(),
-    providerAccountId: text('providerAccountId').notNull(),
-    refresh_token: text('refresh_token'),
-    access_token: text('access_token'),
-    expires_at: integer('expires_at'),
-    token_type: text('token_type'),
-    scope: text('scope'),
-    id_token: text('id_token'),
-    session_state: text('session_state'),
-  },
-  (table) => {
-    return {
-      compositePk: primaryKey({
-        columns: [table.provider, table.providerAccountId],
-      }),
-    };
-  }
-);
-
-export const sessions = pgTable('session', {
-  sessionToken: text('sessionToken').primaryKey(),
-  userId: text('userId')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  expires: timestamp('expires', { mode: 'date' }).notNull(),
-});
-
-export const verificationTokens = pgTable(
-  'verificationToken',
-  {
-    identifier: text('identifier').notNull(),
-    token: text('token').notNull(),
-    expires: timestamp('expires', { mode: 'date' }).notNull(),
-  },
-  (table) => {
-    return {
-      compositePk: primaryKey({ columns: [table.identifier, table.token] }),
-    };
-  }
-);
-
-export const events = pgTable('events', {
-  id: serial('id').primaryKey(),
-  name: varchar('name', { length: 256 }).notNull(),
-  date: varchar('date'),
-  location: varchar('location', { length: 256 }),
-  price: varchar('price', { length: 256 }),
-  organizer_id: uuid('organizer_id').notNull(),
-  created_at: date('created_at').defaultNow(),
-  updated_at: date('updated_at')
-    .defaultNow()
-    .$onUpdate(() => sql`current_timestamp(0)`),
-});
+export const eventStatusEnum = pgEnum('event_status',
+  ['UPCOMING', 'ONGOING', 'FINISHED']);
 
 export const ticketStatusEnum = pgEnum('ticket_status', [
-  'PENDING',
-  'RESERVED',
-  'CANCELLED',
+  'AVAILABLE',
+  'SOLD_OUT',
+  'CANCELLED'
 ]);
 
-export const tickets = pgTable('tickets', {
-  id: serial('id').primaryKey(),
-  event_id: uuid('event_id'),
-  user_id: uuid('user_id'),
-  status: ticketStatusEnum('status').default('PENDING'),
-  created_at: date('created_at').defaultNow(),
-  updated_at: date('updated_at')
+export const ticketOrderStatusEnum = pgEnum('ticket_order_status', [
+  'RESERVED',
+  'PAID',
+  'PENDING',
+  'REFUNDED',
+  'CANCELLED'
+]);
+
+export const events = pgTable('events', {
+  id: text('id').primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  title: varchar('title', { length: 256 }).notNull(),
+  description: text('description'),
+  date: varchar('date'),
+  status: eventStatusEnum('status').default('UPCOMING'),
+  location: varchar('location', { length: 256 }),
+  organizerId: uuid('organizer_id').notNull(),
+  createdAt: date('created_at').defaultNow(),
+  updatedAt: date('updated_at')
     .defaultNow()
-    .$onUpdate(() => sql`current_timestamp()`),
+    .$onUpdate(() => sql`current_timestamp()`)
 });
+
+export const tickets = pgTable('tickets', {
+  id: text('id').primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  eventId: uuid('event_id'),
+  price: integer('price').notNull(),
+  quantityTotal: integer('quantity_total').notNull(),
+  quantityAvailable: integer('quantity_available').notNull(),
+  quantitySold: integer('quantity_sold').default(0),
+  quantityReserved: integer('quantity_reserved').default(0),
+  status: ticketStatusEnum('status').default('AVAILABLE'),
+  createdAt: date('created_at').defaultNow(),
+  updatedAt: date('updated_at')
+    .defaultNow()
+    .$onUpdate(() => sql`current_timestamp()`)
+});
+
+export const ticketOrders = pgTable('ticket_orders', {
+  ticketId: uuid('ticket_id').primaryKey(),
+  userId: uuid('user_id').primaryKey(),
+  status: ticketOrderStatusEnum('status').notNull(),
+  expiresAt: date('expires_at').notNull(),
+  createdAt: date('created_at').defaultNow(),
+  updatedAt: date('updated_at')
+    .defaultNow()
+    .$onUpdate(() => sql`current_timestamp()`)
+});
+
+export const ticketsRelations = relations(tickets, ({ one, many }) => ({
+  event: one(events, { fields: [tickets.eventId], references: [events.id] }),
+  reservations: many(ticketOrders, { relationName: 'reservations' })
+}));
+
+export const ticketReservationsRelations = relations(ticketOrders, ({ one }) => ({
+  ticket: one(tickets, { fields: [ticketOrders.ticketId], references: [tickets.id] }),
+  user: one(users, { fields: [ticketOrders.userId], references: [users.id] })
+}));
+
+export const eventsRelations = relations(events, ({ one, many }) => ({
+  organizer: one(users, { fields: [events.organizerId], references: [users.id] }),
+  tickets: many(tickets, { relationName: 'tickets' })
+}));

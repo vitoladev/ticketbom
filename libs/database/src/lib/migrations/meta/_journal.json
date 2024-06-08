@@ -15,6 +15,13 @@
       "when": 1715589989508,
       "tag": "0001_wonderful_star_brand",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1716341516064,
+      "tag": "0002_glossy_terrax",
+      "breakpoints": true
     }
   ]
 }
