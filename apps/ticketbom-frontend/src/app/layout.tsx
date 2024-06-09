@@ -4,6 +4,7 @@ import React from 'react';
 import { ReactQueryProvider } from '../providers/ReactQueryProvider';
 import { OrderProvider } from '../providers/OrderProvider';
 import Nav from '../components/ui/nav';
+import { UserProvider } from '../providers/UserProvider';
 import { auth } from './auth/auth';
 
 export const metadata = {
@@ -20,16 +21,13 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Nav
-          user={{
-            name: session?.user?.name || '',
-            image: session?.user?.image || '',
-          }}
-        />
-        <ReactQueryProvider>
-          <OrderProvider>{children}</OrderProvider>
-        </ReactQueryProvider>
-        <Footer />
+        <UserProvider user={session?.user}>
+          <Nav />
+          <ReactQueryProvider>
+            <OrderProvider>{children}</OrderProvider>
+          </ReactQueryProvider>
+          <Footer />
+        </UserProvider>
       </body>
     </html>
   );
