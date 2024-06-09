@@ -1,25 +1,35 @@
 import { relations, sql } from 'drizzle-orm';
-import { date, integer, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
-
-// it is a ticket buying system focused on sports events such as football, basketball, etc
+import {
+  date,
+  integer,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
 
 export const users = pgTable('user', {
-  id: text('id')
+  id: uuid('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text('name'),
   email: text('email').notNull(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
-  image: text('image')
+  image: text('image'),
 });
 
-export const eventStatusEnum = pgEnum('event_status',
-  ['UPCOMING', 'ONGOING', 'FINISHED']);
+export const eventStatusEnum = pgEnum('event_status', [
+  'UPCOMING',
+  'ONGOING',
+  'FINISHED',
+]);
 
 export const ticketStatusEnum = pgEnum('ticket_status', [
   'AVAILABLE',
   'SOLD_OUT',
-  'CANCELLED'
+  'CANCELLED',
 ]);
 
 export const ticketOrderStatusEnum = pgEnum('ticket_order_status', [
@@ -27,11 +37,11 @@ export const ticketOrderStatusEnum = pgEnum('ticket_order_status', [
   'PAID',
   'PENDING',
   'REFUNDED',
-  'CANCELLED'
 ]);
 
 export const events = pgTable('events', {
-  id: text('id').primaryKey()
+  id: uuid('id')
+    .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   title: varchar('title', { length: 256 }).notNull(),
   description: text('description'),
@@ -42,13 +52,16 @@ export const events = pgTable('events', {
   createdAt: date('created_at').defaultNow(),
   updatedAt: date('updated_at')
     .defaultNow()
-    .$onUpdate(() => sql`current_timestamp()`)
+    .$onUpdate(() => sql`current_timestamp()`),
 });
 
 export const tickets = pgTable('tickets', {
-  id: text('id').primaryKey()
+  id: uuid('id')
+    .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  eventId: uuid('event_id'),
+  eventId: uuid('event_id')
+    .notNull()
+    .references(() => events.id),
   price: integer('price').notNull(),
   quantityTotal: integer('quantity_total').notNull(),
   quantityAvailable: integer('quantity_available').notNull(),
@@ -58,31 +71,47 @@ export const tickets = pgTable('tickets', {
   createdAt: date('created_at').defaultNow(),
   updatedAt: date('updated_at')
     .defaultNow()
-    .$onUpdate(() => sql`current_timestamp()`)
+    .$onUpdate(() => sql`current_timestamp()`),
 });
 
 export const ticketOrders = pgTable('ticket_orders', {
-  ticketId: uuid('ticket_id').primaryKey(),
-  userId: uuid('user_id').primaryKey(),
+  id: uuid('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  ticketId: uuid('ticket_id')
+    .notNull()
+    .references(() => tickets.id),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id),
   status: ticketOrderStatusEnum('status').notNull(),
   expiresAt: date('expires_at').notNull(),
   createdAt: date('created_at').defaultNow(),
   updatedAt: date('updated_at')
     .defaultNow()
-    .$onUpdate(() => sql`current_timestamp()`)
+    .$onUpdate(() => sql`current_timestamp()`),
 });
 
 export const ticketsRelations = relations(tickets, ({ one, many }) => ({
   event: one(events, { fields: [tickets.eventId], references: [events.id] }),
-  reservations: many(ticketOrders, { relationName: 'reservations' })
+  reservations: many(ticketOrders, { relationName: 'reservations' }),
 }));
 
-export const ticketReservationsRelations = relations(ticketOrders, ({ one }) => ({
-  ticket: one(tickets, { fields: [ticketOrders.ticketId], references: [tickets.id] }),
-  user: one(users, { fields: [ticketOrders.userId], references: [users.id] })
-}));
+export const ticketReservationsRelations = relations(
+  ticketOrders,
+  ({ one }) => ({
+    ticket: one(tickets, {
+      fields: [ticketOrders.ticketId],
+      references: [tickets.id],
+    }),
+    user: one(users, { fields: [ticketOrders.userId], references: [users.id] }),
+  })
+);
 
 export const eventsRelations = relations(events, ({ one, many }) => ({
-  organizer: one(users, { fields: [events.organizerId], references: [users.id] }),
-  tickets: many(tickets, { relationName: 'tickets' })
+  organizer: one(users, {
+    fields: [events.organizerId],
+    references: [users.id],
+  }),
+  tickets: many(tickets, { relationName: 'tickets' }),
 }));
