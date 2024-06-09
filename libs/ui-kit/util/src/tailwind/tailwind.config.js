@@ -1,8 +1,6 @@
 
 const { join } = require('path');
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const defaultTheme = require('tailwindcss/defaultTheme');
 const TailwindAnimate = require('tailwindcss-animate');
 
 module.exports = {
