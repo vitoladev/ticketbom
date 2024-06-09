@@ -59,6 +59,7 @@ export const tickets = pgTable('tickets', {
   id: uuid('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
+  title: varchar('title', { length: 256 }).notNull(),
   eventId: uuid('event_id')
     .notNull()
     .references(() => events.id),
