@@ -4,10 +4,15 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '@ticketbom/database';
 import { randomUUID } from 'crypto';
 import { eq, sql } from 'drizzle-orm';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class EventsService {
-  constructor(@Inject('DB_DEV') private db: NodePgDatabase<typeof schema>) {}
+  constructor(
+    @Inject('DB_DEV') private db: NodePgDatabase<typeof schema>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
+  ) {}
 
   async create(createEventDto: CreateEventDto) {
     const event = await this.db
@@ -23,11 +28,19 @@ export class EventsService {
       .returning()
       .then((event) => event[0]);
 
+    await this.cacheManager.del('events:*');
     return event;
   }
 
   // Search for all events in the database with pagination support using the page and pageSize query parameters from the request
   async findAll({ page, pageSize } = { page: 1, pageSize: 10 }) {
+    // Check if the data is already in the cache
+    const cachedData = await this.cacheManager.get(
+      `events:${page}:${pageSize}`
+    );
+
+    if (cachedData) return cachedData;
+
     const offset = (page - 1) * pageSize;
 
     const [data, [{ count }]] = await Promise.all([
@@ -52,11 +65,15 @@ export class EventsService {
 
     const totalPages = Math.ceil(count / pageSize);
 
-    return {
+    const result = {
       data,
       totalRecords: count,
       totalPages,
     };
+
+    await this.cacheManager.set(`events:${page}:${pageSize}`, result);
+
+    return result;
   }
 
   async findOne(id: string) {
