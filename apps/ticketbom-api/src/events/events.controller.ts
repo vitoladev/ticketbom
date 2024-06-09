@@ -1,11 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 
 @Controller('events')
 export class EventsController {
-  constructor(private readonly eventsService: EventsService) {
-  }
+  constructor(private readonly eventsService: EventsService) {}
 
   @Post()
   create(@Body() createEventDto: CreateEventDto) {
@@ -13,7 +21,10 @@ export class EventsController {
   }
 
   @Get()
-  findAll(@Query() { page, pageSize }) {
+  findAll(
+    @Query('page', ParseIntPipe) page,
+    @Query('pageSize', ParseIntPipe) pageSize: number
+  ) {
     return this.eventsService.findAll({ page, pageSize });
   }
 
