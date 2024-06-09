@@ -38,11 +38,11 @@ const OrderPage: React.FC = () => {
       <CardHeader>
         <CardTitle className="text-center mb-2">Compra</CardTitle>
         <Separator />
-        <CardDescription>
-          {orderPrice === 0
-            ? 'Nenhum ingresso selecionado no momento, volte a página do evento'
-            : 'Confira os ingressos selecionados'}
-        </CardDescription>
+        {orderPrice === 0 && (
+          <CardDescription className="text-center">
+            Nenhum ingresso selecionado no momento, volte a página do evento
+          </CardDescription>
+        )}
       </CardHeader>
       {!user && (
         <CardContent>
@@ -54,7 +54,7 @@ const OrderPage: React.FC = () => {
         <>
           <CardContent className="flex flex-col">
             <Table>
-              <TableCaption>A list of your recent invoices.</TableCaption>
+              <TableCaption>Confira os ingressos selecionados</TableCaption>
               <TableHeader>
                 <TableRow>
                   <TableHead>Ingresso</TableHead>
