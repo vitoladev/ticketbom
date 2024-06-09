@@ -7,3 +7,4 @@ export * from './lib/ui/label';
 export * from './lib/ui/separator';
 export * from './lib/ui/navigation-menu';
 export * from './lib/ui/avatar';
+export * from './lib/ui/form';
