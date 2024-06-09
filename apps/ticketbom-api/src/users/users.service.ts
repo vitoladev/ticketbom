@@ -2,21 +2,17 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import * as schema from '../common/database/schema';
+import * as schema from '@ticketbom/database';
 import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class UsersService {
   constructor(@Inject('DB_DEV') private db: NodePgDatabase<typeof schema>) {}
 
-  async create({ name, email, type }: CreateUserDto) {
+  async create({ name, email, birthDate, document }: CreateUserDto) {
     const user = await this.db
       .insert(schema.users)
-      .values({
-        name,
-        email,
-        type,
-      })
+      .values({ email, name })
       .returning()
       .execute();
 
@@ -27,7 +23,7 @@ export class UsersService {
     return await this.db.select().from(schema.users).execute();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const user = await this.db
       .select()
       .from(schema.users)
@@ -37,7 +33,7 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, { name, email }: UpdateUserDto) {
+  async update(id: string, { name, email }: UpdateUserDto) {
     const user = await this.db
       .update(schema.users)
       .set({ name, email })
@@ -48,7 +44,7 @@ export class UsersService {
     return user[0];
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.db.delete(schema.users).where(eq(schema.users.id, id)).execute();
   }
 }
