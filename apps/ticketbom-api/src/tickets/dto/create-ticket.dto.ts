@@ -1,6 +1,18 @@
-import { IsInt, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateTicketDto {
+  @MinLength(3)
+  @MaxLength(50)
+  @IsNotEmpty()
+  @IsString()
+  title: string;
 
   @IsNotEmpty()
   @IsUUID()
@@ -13,8 +25,6 @@ export class CreateTicketDto {
   @IsNotEmpty()
   @IsInt()
   quantityTotal: number;
-
-
 
   @IsNotEmpty()
   @IsString()
