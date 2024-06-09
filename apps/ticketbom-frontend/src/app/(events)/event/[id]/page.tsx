@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useEvent } from '../../../hooks/useEvent';
 import { useParams } from 'next/navigation';
 import {
@@ -17,28 +17,19 @@ import {
 import { TimerIcon, HomeIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 import { formatMoney } from '../../../../lib/money';
-import { TicketType } from '../../../../types';
+import Link from 'next/link';
+import { useOrderContext } from '../../../../providers/OrderProvider';
 
 const EventPage: React.FC = () => {
   const { id } = useParams();
-  const [ticketOrder, setTicketOrder] = useState<{
-    [key: string]: { ticket: TicketType; count: number };
-  }>({});
+  const { order, addTicketToOrder, removeTicketFromOrder } = useOrderContext();
+  const sumOrderPrice = () =>
+    Object.values(order).reduce(
+      (acc, { ticket, count }) => acc + ticket.price * count,
+      0
+    );
 
   const { data: event, isPending, isError, error } = useEvent(id as string);
-
-  const handleTicketOrder = (ticket: TicketType, count: number) => {
-    setTicketOrder((prev) => {
-      if (prev[ticket.id]) {
-        return {
-          ...prev,
-          [ticket.id]: { ticket, count },
-        };
-      } else {
-        return { ...prev, [ticket.id]: { ticket, count } };
-      }
-    });
-  };
 
   return (
     <Card className="flex flex-col justify-between">
@@ -63,55 +54,70 @@ const EventPage: React.FC = () => {
               </div>
             </CardContent>
             <CardContent>
-              <CardTitle>Ingressos</CardTitle>
-              {event?.tickets.map((ticket) => (
+              <CardTitle className="flex flex-center text-center">
+                Ingressos
+              </CardTitle>
+              {event?.tickets.length === 0 ? (
+                <CardDescription>Nenhum ingresso disponível</CardDescription>
+              ) : (
                 <>
-                  <Separator className="my-4" />
-                  <article className="p-2 shadow-lg" key={ticket.id}>
-                    <h1>{ticket.title}</h1>
-                    <CardDescription>
-                      {formatMoney(ticket.price)}
-                    </CardDescription>
+                  <CardDescription>
+                    Selecione a quantidade de ingressos desejada
+                  </CardDescription>
+                  {event?.tickets.map((ticket) => (
+                    <article key={ticket.id}>
+                      <Separator className="my-2" />
+                      <article className="p-1 shadow-lg">
+                        <h1>{ticket.title}</h1>
+                        <CardDescription>
+                          {formatMoney(ticket.price)}
+                        </CardDescription>
+                        <div>
+                          <label htmlFor={`ticket-quantity-${ticket.id}`}>
+                            Quantidade:{' '}
+                          </label>
+                          <select
+                            id={`ticket-quantity-${ticket.id}`}
+                            value={order[ticket.id]?.count || 0}
+                            onChange={(e) => {
+                              if (parseInt(e.target.value) === 0) {
+                                removeTicketFromOrder(ticket);
+                                return;
+                              }
+                              addTicketToOrder(
+                                ticket,
+                                parseInt(e.target.value)
+                              );
+                            }}
+                          >
+                            {[...Array(10).keys()].map((i) => (
+                              <option key={i} value={i}>
+                                {i}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </article>
+                    </article>
+                  ))}
+                  <section className="flex flex-col justify-between items-center">
+                    <CardFooter className="flex justify-between w-full">
+                      <div className="flex items-center">
+                        <strong>Total:</strong>
+                        <span className="ml-2">
+                          {formatMoney(sumOrderPrice())}
+                        </span>
+                      </div>
+                    </CardFooter>
                     <div>
-                      <label htmlFor={`ticket-quantity-${ticket.id}`}>
-                        Quantidade:{' '}
-                      </label>
-                      <select
-                        id={`ticket-quantity-${ticket.id}`}
-                        value={ticketOrder[ticket.id]?.count || 0}
-                        onChange={(e) =>
-                          handleTicketOrder(ticket, parseInt(e.target.value))
-                        }
-                      >
-                        {[...Array(10).keys()].map((i) => (
-                          <option key={i} value={i}>
-                            {i}
-                          </option>
-                        ))}
-                      </select>
+                      <Button asChild>
+                        <Link href="/order">Finalizar Compra</Link>
+                      </Button>
                     </div>
-                  </article>
+                  </section>
                 </>
-              ))}
+              )}
             </CardContent>
-          </section>
-          <section className="flex flex-col justify-between items-center">
-            <CardFooter className="flex justify-between w-full">
-              <div className="flex items-center">
-                <strong>Total:</strong>
-                <span className="ml-2">
-                  {formatMoney(
-                    Object.values(ticketOrder).reduce(
-                      (acc, { ticket, count }) => acc + ticket.price * count,
-                      0
-                    )
-                  )}
-                </span>
-              </div>
-            </CardFooter>
-            <div>
-              <Button>Comprar</Button>
-            </div>
           </section>
         </>
       )}
