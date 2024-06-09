@@ -1,7 +1,7 @@
 
 const { join } = require('path');
 
-const defaultTheme = require('tailwindcss/defaultTheme');
+// const defaultTheme = require('tailwindcss/defaultTheme');
 const TailwindAnimate = require('tailwindcss-animate');
 
 module.exports = {
