@@ -22,12 +22,7 @@ import { useOrderContext } from '../../../../providers/OrderProvider';
 
 const EventPage: React.FC = () => {
   const { id } = useParams();
-  const { order, addTicketToOrder, removeTicketFromOrder } = useOrderContext();
-  const sumOrderPrice = () =>
-    Object.values(order).reduce(
-      (acc, { ticket, count }) => acc + ticket.price * count,
-      0
-    );
+  const { order, addTicketToOrder, removeTicketFromOrder, sumOrderPrice } = useOrderContext();
 
   const { data: event, isPending, isError, error } = useEvent(id as string);
 

@@ -23,10 +23,17 @@ const useOrder = () => {
     });
   };
 
+  const sumOrderPrice = () =>
+    Object.values(order).reduce(
+      (acc, { ticket, count }) => acc + ticket.price * count,
+      0
+    );
+
   return {
     order,
     addTicketToOrder,
     removeTicketFromOrder,
+    sumOrderPrice,
   };
 };
 
@@ -34,6 +41,7 @@ type OrderContextType = {
   order: OrderType;
   addTicketToOrder: (ticket: TicketType, count: number) => void;
   removeTicketFromOrder: (ticket: TicketType) => void;
+  sumOrderPrice: () => number;
 };
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
