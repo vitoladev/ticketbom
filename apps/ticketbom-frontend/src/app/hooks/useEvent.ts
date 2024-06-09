@@ -1,5 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { EventType } from "../../types";
+import { useQuery } from '@tanstack/react-query';
+import { EventType, TicketType } from '../../types';
+
+interface EventWithTickets extends EventType {
+  tickets: TicketType[];
+}
 
 export const fetchEvent = async (id: string) => {
   const response = await fetch(`http://localhost:3000/api/events/${id}`);
@@ -8,7 +12,7 @@ export const fetchEvent = async (id: string) => {
 };
 
 export const useEvent = (id: string) => {
-  return useQuery<EventType>({
+  return useQuery<EventWithTickets>({
     queryKey: ['event', id],
     queryFn: () => fetchEvent(id),
   });
