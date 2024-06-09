@@ -60,12 +60,10 @@ export class EventsService {
   }
 
   async findOne(id: string) {
-    const event = await this.db.query.events.findMany({
+    const event = await this.db.query.events.findFirst({
       where: eq(schema.events.id, id),
       with: {
-        tickets: {
-          where: eq(schema.tickets.eventId, id),
-        },
+        tickets: true,
       },
     });
 
