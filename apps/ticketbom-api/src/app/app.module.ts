@@ -7,6 +7,7 @@ import * as schema from '@ticketbom/database';
 import { UsersModule } from '../users/users.module';
 import { EventsModule } from '../events/events.module';
 import { TicketsModule } from '../tickets/tickets.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -23,6 +24,9 @@ import { TicketsModule } from '../tickets/tickets.module';
         },
       },
       config: { schema: { ...schema } },
+    }),
+    CacheModule.register({
+      isGlobal: true,
     }),
     UsersModule,
     EventsModule,
