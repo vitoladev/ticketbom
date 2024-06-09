@@ -12,7 +12,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: '/auth/login',
+    // signIn: '/auth/login',
     newUser: '/auth/new-user',
     signOut: '/auth/logout',
     verifyRequest: '/auth/verify-request',

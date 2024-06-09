@@ -7,13 +7,12 @@ import {
   NavigationMenu,
 } from '@ticketbom/ui-kit/ui';
 import { signOut } from 'next-auth/react';
+import { useUser } from '../../providers/UserProvider';
 
 // user image props to be added
-export default function Nav({
-  user,
-}: {
-  user: { name: string; image: string };
-}) {
+export default function Nav() {
+  const { user } = useUser();
+
   return (
     <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
       <Link className="mr-6 hidden lg:flex" href="#">
@@ -26,7 +25,7 @@ export default function Nav({
               className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
               href="/"
             >
-              Home
+              TicketBom.live
             </Link>
           </NavigationMenuLink>
 
@@ -39,7 +38,7 @@ export default function Nav({
             </Link>
           </NavigationMenuLink>
 
-          {user.image ? (
+          {user?.email ? (
             <NavigationMenuLink asChild>
               <button
                 className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
@@ -52,7 +51,7 @@ export default function Nav({
             <NavigationMenuLink asChild>
               <Link
                 className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
-                href="/auth/login"
+                href="/api/auth/signin"
               >
                 Login
               </Link>
