@@ -32,9 +32,7 @@ export class EventsService {
     return event;
   }
 
-  // Search for all events in the database with pagination support using the page and pageSize query parameters from the request
   async findAll({ page, pageSize } = { page: 1, pageSize: 10 }) {
-    // Check if the data is already in the cache
     const cachedData = await this.cacheManager.get(
       `events:${page}:${pageSize}`
     );
@@ -77,12 +75,17 @@ export class EventsService {
   }
 
   async findOne(id: string) {
+    const cachedData = await this.cacheManager.get(`event:${id}`);
+    if (cachedData) return cachedData;
+
     const event = await this.db.query.events.findFirst({
       where: eq(schema.events.id, id),
       with: {
         tickets: true,
       },
     });
+
+    await this.cacheManager.set(`event:${id}`, event);
 
     return event;
   }
