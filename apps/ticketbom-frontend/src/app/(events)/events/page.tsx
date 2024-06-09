@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Event } from '../../../components/ui/event';
-import { useEvents } from '../../hooks/useEvents';
+import { useEvents } from '../../../hooks/useEvents';
 import {
   Card,
   CardContent,

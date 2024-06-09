@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useEvent } from '../../../hooks/useEvent';
+import { useEvent } from '../../../../hooks/useEvent';
 import { useParams } from 'next/navigation';
 import {
   Card,

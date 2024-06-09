@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { EventType, TicketType } from '../../types';
+import { EventType, TicketType } from '../types';
 
 interface EventWithTickets extends EventType {
   tickets: TicketType[];

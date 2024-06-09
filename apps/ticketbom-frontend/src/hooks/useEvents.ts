@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { EventType } from '../../types';
+import { EventType } from '../types';
 
 const fetchEvents = async () => {
   const response = await fetch('http://localhost:3000/api/events');
