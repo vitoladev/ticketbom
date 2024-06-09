@@ -12,27 +12,28 @@ const useOrder = () => {
   const [order, setOrder] = useState<OrderType>({});
 
   const addTicketToOrder = (ticket: TicketType, count: number) => {
+    setOrder((prev) => ({ ...prev, [ticket.id]: { ticket, count } }));
+  };
+
+  const removeTicketFromOrder = (ticket: TicketType) => {
     setOrder((prev) => {
-      if (prev && prev[ticket.id]) {
-        return {
-          ...prev,
-          [ticket.id]: { ticket, count: prev[ticket.id].count + count },
-        };
-      } else {
-        return { ...prev, [ticket.id]: { ticket, count } };
-      }
+      const newOrder = { ...prev };
+      delete newOrder[ticket.id];
+      return newOrder;
     });
   };
 
   return {
     order,
     addTicketToOrder,
+    removeTicketFromOrder,
   };
 };
 
 type OrderContextType = {
   order: OrderType;
   addTicketToOrder: (ticket: TicketType, count: number) => void;
+  removeTicketFromOrder: (ticket: TicketType) => void;
 };
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
