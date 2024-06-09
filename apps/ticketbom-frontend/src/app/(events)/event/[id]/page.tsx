@@ -22,7 +22,8 @@ import { useOrderContext } from '../../../../providers/OrderProvider';
 
 const EventPage: React.FC = () => {
   const { id } = useParams();
-  const { order, addTicketToOrder, removeTicketFromOrder, sumOrderPrice } = useOrderContext();
+  const { order, addTicketToOrder, removeTicketFromOrder, sumOrderPrice } =
+    useOrderContext();
 
   const { data: event, isPending, isError, error } = useEvent(id as string);
 
@@ -105,8 +106,8 @@ const EventPage: React.FC = () => {
                       </div>
                     </CardFooter>
                     <div>
-                      <Button asChild>
-                        <Link href="/order">Finalizar Compra</Link>
+                      <Button variant="outline" asChild>
+                        <Link href="/order">Comprar</Link>
                       </Button>
                     </div>
                   </section>

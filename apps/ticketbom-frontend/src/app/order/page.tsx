@@ -33,7 +33,7 @@ const OrderPage: React.FC = () => {
         <h2>Total: {formatMoney(sumOrderPrice())}</h2>
       </CardContent>
       <CardFooter className="flex flex-col">
-        <Button>Finalizar compra</Button>
+        <Button variant="outline">Finalizar compra</Button>
       </CardFooter>
     </Card>
   );
