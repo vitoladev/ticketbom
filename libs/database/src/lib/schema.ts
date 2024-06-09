@@ -113,5 +113,5 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
     fields: [events.organizerId],
     references: [users.id],
   }),
-  tickets: many(tickets, { relationName: 'tickets' }),
+  tickets: many(tickets),
 }));
