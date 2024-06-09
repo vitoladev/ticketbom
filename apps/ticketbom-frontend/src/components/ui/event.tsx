@@ -1,5 +1,5 @@
 import React from 'react';
-import { EventType, TicketType } from '../../types';
+import { EventType } from '../../types';
 import {
   Card,
   CardContent,

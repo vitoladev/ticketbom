@@ -1,5 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@ticketbom/ui-kit/ui';
 import Events from './(events)/events/page';
 
