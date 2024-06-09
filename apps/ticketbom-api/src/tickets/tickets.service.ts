@@ -20,6 +20,7 @@ export class TicketsService {
     const ticket = await this.db
       .insert(schema.tickets)
       .values({
+        title: createTicketDto.title,
         price: createTicketDto.price,
         status: createTicketDto.status,
         eventId: createTicketDto.eventId,
