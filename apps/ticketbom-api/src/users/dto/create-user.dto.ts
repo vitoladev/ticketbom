@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsString } from 'class-validator';
+import { IsDate, IsEmail, IsString } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -6,8 +6,9 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @IsEnum(['ADMIN', 'PARTICIPANT', 'ORGANIZER'], {
-    message: 'INVALID_USER_TYPE',
-  })
-  type: 'ADMIN' | 'PARTICIPANT' | 'ORGANIZER';
+  @IsString()
+  document: string;
+
+  @IsDate()
+  birthDate: Date;
 }
