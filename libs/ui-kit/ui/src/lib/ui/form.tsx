@@ -11,7 +11,7 @@ import {
 } from "react-hook-form"
 
 import { cn } from "@ticketbom/ui-kit/util"
-import { Label } from "@ticketbom/ui-kit/ui/lib/ui/label"
+import { Label } from './label';
 
 const Form = FormProvider
 
