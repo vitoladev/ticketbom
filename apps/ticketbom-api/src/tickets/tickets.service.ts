@@ -8,32 +8,39 @@ import * as schema from '@ticketbom/database';
 import { eq, ExtractTablesWithRelations } from 'drizzle-orm';
 import { PgTransaction } from 'drizzle-orm/pg-core';
 import { addMinutes } from 'date-fns';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class TicketsService {
-  constructor(@Inject('DB_DEV') private db: NodePgDatabase<typeof schema>) {}
+  constructor(
+    @Inject('DB_DEV') private db: NodePgDatabase<typeof schema>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
+  ) {}
 
   async create(createTicketDto: CreateTicketDto) {
     // TODO: Send to SQS to create a ticket
 
     // Save ticket to database
-    const ticket = await this.db
-      .insert(schema.tickets)
-      .values({
-        title: createTicketDto.title,
-        price: createTicketDto.price,
-        status: createTicketDto.status,
-        eventId: createTicketDto.eventId,
-        quantityTotal: createTicketDto.quantityTotal,
-        quantityAvailable: createTicketDto.quantityTotal,
-      })
-      .returning()
-      .then((ticket) => ticket[0]);
+    await this.db.transaction(async (tx) => {
+      const ticket = await tx
+        .insert(schema.tickets)
+        .values({
+          title: createTicketDto.title,
+          price: createTicketDto.price,
+          status: createTicketDto.status,
+          eventId: createTicketDto.eventId,
+          quantityTotal: createTicketDto.quantityTotal,
+          quantityAvailable: createTicketDto.quantityTotal,
+        })
+        .returning()
+        .then((ticket) => ticket[0]);
 
-    // TODO: Save ticket to stripe payment gateway for payment processing
+      // Save ticket to cache
+      await this.cacheManager.set(`ticket:${ticket.id}`, ticket);
+    });
 
-    // TODO: Save ticket to cache
-    return ticket;
+    // TODO: Save ticket to MercadoPago payment gateway for payment processing
   }
 
   async verifyIfTicketIsAvailable(
