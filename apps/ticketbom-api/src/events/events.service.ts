@@ -74,6 +74,19 @@ export class EventsService {
     return result;
   }
 
+  async findByOrganizerId(organizerId: string) {
+    const cachedData = this.cacheManager.get(`events:organizer:${organizerId}`);
+    if (cachedData) return cachedData;
+
+    const event = await this.db.query.events.findMany({
+      where: eq(schema.events.organizerId, organizerId),
+    });
+
+    await this.cacheManager.set(`events:organizer:${organizerId}`, event);
+
+    return;
+  }
+
   async findOne(id: string) {
     const cachedData = await this.cacheManager.get(`event:${id}`);
     if (cachedData) return cachedData;

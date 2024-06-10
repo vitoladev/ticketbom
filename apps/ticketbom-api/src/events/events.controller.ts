@@ -28,6 +28,11 @@ export class EventsController {
     return this.eventsService.findAll({ page, pageSize });
   }
 
+  @Get('organizer/:organizerId')
+  findByOrganizerId(@Param('organizerId') organizerId: string) {
+    return this.eventsService.findByOrganizerId(organizerId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.eventsService.findOne(id);
