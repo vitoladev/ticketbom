@@ -12,7 +12,7 @@ export class TicketsController {
     return this.ticketsService.create(createTicketDto);
   }
 
-  @Get(':eventId')
+  @Get('event/:eventId')
   findByEventId(@Param('eventId') eventId: string) {
     return this.ticketsService.findByEventId(eventId);
   }
@@ -27,10 +27,10 @@ export class TicketsController {
     return this.ticketsService.startOrder({ ticketId: id, userId: '123' });
   }
 
-  @Post(':id/verify')
-  verify(@Param('id') id: string) {
-    return this.ticketsService.verifyIfTicketIsAvailable(id);
-  }
+  // @Get('verify/:id')
+  // verify(@Param('id') id: string) {
+  //   return this.ticketsService.verifyIfTicketIsAvailable(id);
+  // }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateTicketDto: ReserveTicketDto) {
