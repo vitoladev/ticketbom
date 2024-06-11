@@ -21,8 +21,8 @@ jobs:
       DB_PASSWORD: testing
       PORT: 3000
       COGNITO_CLIENT_ID: placeholder
-      COGNITO_USER_POOL_ID: placeholder
-      COGNITO_REGION: placeholder
+      COGNITO_CLIENT_SECRET: placeholder
+      COGNITO_ISSUER: placeholder
     services:
       postgres:
         image: postgres
