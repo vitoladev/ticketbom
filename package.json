@@ -11,7 +11,7 @@
     "build": "nx affected -t build --parallel",
     "start:api": "nx serve ticketbom-api",
     "start:frontend": "nx dev ticketbom-frontend",
-    "test:api": "nx e2e ticketbom-api-e2e"
+    "test:api": "nx test ticketbom-api"
   },
   "private": true,
   "dependencies": {
@@ -55,8 +55,9 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@nestjs/schematics": "^10.0.1",
-    "@nestjs/testing": "^10.0.2",
+    "@nestjs/testing": "^10.3.9",
     "@nx/devkit": "19.0.1",
     "@nx/eslint": "19.0.1",
     "@nx/eslint-plugin": "19.0.1",
@@ -104,6 +105,7 @@
     "nx": "19.0.1",
     "postcss": "^8.4.38",
     "prettier": "^2.6.2",
+    "supertest": "^7.0.0",
     "tailwindcss": "3.2.7",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
