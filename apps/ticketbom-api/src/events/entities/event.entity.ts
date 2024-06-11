@@ -4,4 +4,11 @@ export enum EventStatus {
   FINISHED = 'FINISHED',
 }
 
-export class Event {}
+export class EventEntity {
+  title: string;
+  description: string;
+  date: string;
+  status: EventStatus;
+  location: string;
+  organizerId?: string;
+}
