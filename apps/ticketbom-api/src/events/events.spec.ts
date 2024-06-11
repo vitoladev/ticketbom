@@ -18,7 +18,7 @@ const eventFactory = (): EventEntity => ({
     'ONGOING',
     'FINISHED',
   ] as EventStatus[]),
-  location: faker.address.streetAddress(),
+  location: faker.location.streetAddress(),
 });
 
 describe('Events', () => {
@@ -101,30 +101,18 @@ describe('Events', () => {
       expect(response.statusCode).toBe(400);
     });
 
-    it('should throw a validation error if organizerId is invalid', async () => {
-      const eventInput = eventFactory();
-
-      const response = await app.inject({
-        method: 'POST',
-        url: '/events',
-        payload: {
-          ...eventInput,
-          organizerId: 'INVALID_UUID',
-        },
-      });
-
-      expect(response.statusCode).toBe(400);
-    });
-
     it('should throw a 409 conflict error if event with same title and date already exists', async () => {
       const eventInput = eventFactory();
 
       // create an event with the same title and date
-      await app.inject({
+      const alreadyCreatedResponse = await app.inject({
         method: 'POST',
         url: '/events',
         payload: eventInput,
       });
+
+      expect(alreadyCreatedResponse.statusCode).toBe(201);
+      expect(alreadyCreatedResponse.json()).toMatchObject<EventEntity>(eventInput);
 
       const response = await app.inject({
         method: 'POST',

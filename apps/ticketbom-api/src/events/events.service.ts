@@ -6,6 +6,7 @@ import { randomUUID } from 'crypto';
 import { eq, sql } from 'drizzle-orm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { EventAlreadyExistsException } from './events.exceptions';
 
 @Injectable()
 export class EventsService {
@@ -15,21 +16,29 @@ export class EventsService {
   ) {}
 
   async create(createEventDto: CreateEventDto) {
-    const event = await this.db
-      .insert(schema.events)
-      .values({
-        title: createEventDto.title,
-        description: createEventDto.description,
-        date: createEventDto.date,
-        location: createEventDto.location,
-        status: createEventDto.status,
-        organizerId: randomUUID(),
-      })
-      .returning()
-      .then((event) => event[0]);
+    try {
+      const event = await this.db
+        .insert(schema.events)
+        .values({
+          title: createEventDto.title,
+          description: createEventDto.description,
+          date: createEventDto.date,
+          location: createEventDto.location,
+          status: createEventDto.status,
+          organizerId: randomUUID(),
+        })
+        .returning()
+        .then((event) => event[0]);
 
-    await this.cacheManager.del('events:*');
-    return event;
+      await this.cacheManager.del('events:*');
+      return event;
+    } catch (error) {
+      // TODO: Create a custom filter to handle conflict errors
+      if (error.code === '23505') {
+        throw new EventAlreadyExistsException(error);
+      }
+      throw error;
+    }
   }
 
   async findAll({ page, pageSize } = { page: 1, pageSize: 10 }) {
