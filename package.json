@@ -5,13 +5,14 @@
   "scripts": {
     "drizzle-kit": "drizzle-kit",
     "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "nx": "nx",
     "lint": "nx affected -t lint --parallel",
     "build": "nx affected -t build --parallel",
     "start:api": "nx serve ticketbom-api",
     "start:frontend": "nx dev ticketbom-frontend",
-    "test:api": "nx test ticketbom-api"
+    "test:api": "nx test ticketbom-api --detectOpenHandles --forceExit"
   },
   "private": true,
   "dependencies": {
