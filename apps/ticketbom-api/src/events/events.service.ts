@@ -6,7 +6,10 @@ import { randomUUID } from 'crypto';
 import { eq, sql } from 'drizzle-orm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { EventAlreadyExistsException } from './events.exceptions';
+import {
+  EventAlreadyExistsException,
+  EventNotFoundException,
+} from './events.exceptions';
 
 @Injectable()
 export class EventsService {
@@ -106,6 +109,7 @@ export class EventsService {
         tickets: true,
       },
     });
+    if (!event) throw new EventNotFoundException(id);
 
     await this.cacheManager.set(`event:${id}`, event);
 
