@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  ParseUUIDPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -28,18 +29,13 @@ export class EventsController {
     return this.eventsService.findAll({ page, pageSize });
   }
 
-  @Get('organizer/:organizerId')
-  findByOrganizerId(@Param('organizerId') organizerId: string) {
-    return this.eventsService.findByOrganizerId(organizerId);
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.eventsService.findOne(id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.eventsService.remove(id);
   }
 }
