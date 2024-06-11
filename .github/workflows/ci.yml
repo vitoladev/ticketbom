@@ -58,5 +58,7 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Setup database migrations 
+        run: npm run db:push
       - name: Test
         run: npm run test:api
