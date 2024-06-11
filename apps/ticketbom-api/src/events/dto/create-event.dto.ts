@@ -1,5 +1,6 @@
 import {
   IsDateString,
+  IsEnum,
   IsNotEmpty,
   IsString,
   MinLength,
@@ -29,7 +30,7 @@ export class CreateEventDto {
   location: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsEnum(EventStatus)
   // validate the status field using the EventStatus enum
   status: EventStatus;
 }
