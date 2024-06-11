@@ -19,6 +19,10 @@ jobs:
       DB_USER: postgres
       DB_NAME: postgres
       DB_PASSWORD: testing
+      PORT: 3000
+      COGNITO_CLIENT_ID: placeholder
+      COGNITO_USER_POOL_ID: placeholder
+      COGNITO_REGION: placeholder
     services:
       postgres:
         image: postgres
