@@ -6,6 +6,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
@@ -39,21 +40,30 @@ export const ticketOrderStatusEnum = pgEnum('ticket_order_status', [
   'REFUNDED',
 ]);
 
-export const events = pgTable('events', {
-  id: uuid('id')
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  title: varchar('title', { length: 256 }).notNull(),
-  description: text('description'),
-  date: varchar('date'),
-  status: eventStatusEnum('status').default('UPCOMING'),
-  location: varchar('location', { length: 256 }),
-  organizerId: uuid('organizer_id').notNull(),
-  createdAt: date('created_at').defaultNow(),
-  updatedAt: date('updated_at')
-    .defaultNow()
-    .$onUpdate(() => sql`current_timestamp()`),
-});
+export const events = pgTable(
+  'events',
+  {
+    id: uuid('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    title: varchar('title', { length: 50 }).unique().notNull(),
+    description: text('description'),
+    date: varchar('date'),
+    status: eventStatusEnum('status').default('UPCOMING'),
+    location: varchar('location', { length: 256 }),
+    organizerId: uuid('organizer_id').notNull(),
+    createdAt: date('created_at').defaultNow(),
+    updatedAt: date('updated_at')
+      .defaultNow()
+      .$onUpdate(() => sql`current_timestamp()`),
+  },
+  (t) => ({
+    uniqueTitleAndDateIdx: uniqueIndex('unique_title_and_date_idx').on(
+      t.title,
+      t.date
+    ),
+  })
+);
 
 export const tickets = pgTable('tickets', {
   id: uuid('id')

@@ -15,6 +15,13 @@
       "when": 1717908174354,
       "tag": "0001_busy_catseye",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1718091200083,
+      "tag": "0002_chubby_sasquatch",
+      "breakpoints": true
     }
   ]
 }
