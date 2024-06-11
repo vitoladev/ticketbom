@@ -8,6 +8,8 @@ import { EventsModule } from './events.module';
 import { faker } from '@faker-js/faker';
 import { EventEntity, EventStatus } from './entities/event.entity';
 import { ValidationPipe } from '@nestjs/common';
+import { EventsService } from './events.service';
+import { randomUUID } from 'crypto';
 
 const eventFactory = (): EventEntity => ({
   title: faker.lorem.words(3),
@@ -112,7 +114,9 @@ describe('Events', () => {
       });
 
       expect(alreadyCreatedResponse.statusCode).toBe(201);
-      expect(alreadyCreatedResponse.json()).toMatchObject<EventEntity>(eventInput);
+      expect(alreadyCreatedResponse.json()).toMatchObject<EventEntity>(
+        eventInput
+      );
 
       const response = await app.inject({
         method: 'POST',
@@ -136,8 +140,6 @@ describe('Events', () => {
       });
       const responseData = response.json();
 
-      console.log({ responseData });
-
       expect(response.statusCode).toBe(200);
       expect(responseData.data.length).toBeGreaterThan(0);
       expect(responseData.totalRecords).toBeGreaterThan(0);
@@ -145,16 +147,38 @@ describe('Events', () => {
     });
   });
 
-  // describe('/events/:id (GET)', () => {
-  //     it('should return a single event', async () => {
-  //         const eventId = 1;
-  //         const response = await app.inject({
-  //             method: 'GET',
-  //             url: `/events/${eventId}`,
-  //         });
+  describe('/events/:id (GET)', () => {
+    it('should return a single event', async () => {
+      const eventsService = app.get(EventsService);
+      const eventsInput = eventFactory();
+      const event = await eventsService.create(eventsInput);
 
-  //         expect(response.statusCode).toBe(200);
-  //         expect(response.json()).toEqual(response.body);
-  //     });
-  // });
+      const response = await app.inject({
+        method: 'GET',
+        url: `/events/${event.id}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject<EventEntity>(eventsInput);
+    });
+
+    it('should return a 400 bad request error if id is invalid', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/events/invalid-uuid',
+      });
+
+      expect(response.statusCode).toBe(400);
+    });
+
+    it('should return a 404 not found error if event does not exist', async () => {
+      const invalidId = randomUUID();
+      const response = await app.inject({
+        method: 'GET',
+        url: `/events/${invalidId}`,
+      });
+
+      expect(response.statusCode).toBe(404);
+    });
+  });
 });
