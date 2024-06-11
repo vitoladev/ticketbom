@@ -12,7 +12,7 @@
     "build": "nx affected -t build --parallel",
     "start:api": "nx serve ticketbom-api",
     "start:frontend": "nx dev ticketbom-frontend",
-    "test:api": "nx test ticketbom-api --detectOpenHandles"
+    "test:api": "nx test ticketbom-api --detectOpenHandles --forceExit"
   },
   "private": true,
   "dependencies": {
