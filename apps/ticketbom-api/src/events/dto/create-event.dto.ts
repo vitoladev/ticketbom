@@ -1,8 +1,14 @@
-import { IsDateString, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  Validate,
+} from 'class-validator';
 import { EventStatus } from '../entities/event.entity';
+import { IsFutureDateString } from '../../common/validators/IsFutureDateString';
 
 export class CreateEventDto {
-
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
@@ -15,6 +21,7 @@ export class CreateEventDto {
 
   @IsNotEmpty()
   @IsDateString()
+  @Validate(IsFutureDateString, { message: 'Date must be in the future' })
   date: string;
 
   @IsNotEmpty()
