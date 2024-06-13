@@ -10,25 +10,43 @@ import { PgTransaction } from 'drizzle-orm/pg-core';
 import { addMinutes } from 'date-fns';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { PaymentsService } from '../payments/payments.service';
+import { randomUUID } from 'crypto';
+
+import { convertCentsToFullPrice } from '../common/utils/money';
 
 @Injectable()
 export class TicketsService {
   constructor(
     @Inject('DB_DEV') private db: NodePgDatabase<typeof schema>,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private paymentGateway: PaymentsService
   ) {}
 
   async create(createTicketDto: CreateTicketDto) {
     // TODO: Send to SQS to create a ticket
 
-    // Save ticket to database
-    await this.db.transaction(async (tx) => {
+    return this.db.transaction(async (tx) => {
+      const ticketId = randomUUID();
+
+      // TODO: Save ticket to MercadoPago payment gateway for payment processing
+      const paymentProduct = await this.paymentGateway.createProduct({
+        id: ticketId,
+        title: createTicketDto.title,
+        price: convertCentsToFullPrice(createTicketDto.price),
+        quantity: 1,
+      });
+
+      console.log({ paymentProduct });
+
+      // Create a ticket in the database
       const ticket = await tx
         .insert(schema.tickets)
         .values({
+          id: ticketId,
           title: createTicketDto.title,
           price: createTicketDto.price,
-          status: createTicketDto.status,
+          paymentId: paymentProduct.id,
           eventId: createTicketDto.eventId,
           quantityTotal: createTicketDto.quantityTotal,
           quantityAvailable: createTicketDto.quantityTotal,
@@ -38,9 +56,9 @@ export class TicketsService {
 
       // Save ticket to cache
       await this.cacheManager.set(`ticket:${ticket.id}`, ticket);
-    });
 
-    // TODO: Save ticket to MercadoPago payment gateway for payment processing
+      return ticket;
+    });
   }
 
   async verifyIfTicketIsAvailable(
@@ -87,7 +105,6 @@ export class TicketsService {
         .returning()
         .then((orders) => orders[0]);
 
-      console.log({ buyOrder });
       // Update the ticket's quantity available and quantity reserved fields
       await tx
         .update(schema.tickets)
