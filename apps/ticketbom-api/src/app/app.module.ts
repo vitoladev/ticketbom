@@ -18,19 +18,11 @@ import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
     ConfigModule.forRoot({
       validate: validateEnvConfig,
       load: [configuration],
+      isGlobal: true,
     }),
     DrizzlePGModule.register({
       tag: 'DB_DEV',
-      pg: {
-        connection: 'client',
-        config: {
-          host: process.env.DB_HOST,
-          port: parseInt(process.env.DB_PORT),
-          user: process.env.DB_USER,
-          password: process.env.DB_PASSWORD,
-          database: process.env.DB_NAME,
-        },
-      },
+      connection: 'client',
       config: { schema: { ...schema } },
     }),
     CacheModule.register({
