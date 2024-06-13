@@ -10,6 +10,7 @@ import {
   EventAlreadyExistsException,
   EventNotFoundException,
 } from './events.exceptions';
+import { UpdateEventDto } from './dto/update-event.dto';
 
 @Injectable()
 export class EventsService {
@@ -42,6 +43,31 @@ export class EventsService {
       }
       throw error;
     }
+  }
+
+  async update(id: string, updateEventDto: UpdateEventDto) {
+    const result = await this.db.transaction(async (tx) => {
+      const event = tx
+        .update(schema.events)
+        .set({
+          title: updateEventDto.title,
+          description: updateEventDto.description,
+          date: updateEventDto.date,
+          location: updateEventDto.location,
+          status: updateEventDto.status,
+        })
+        .where(eq(schema.events.id, id))
+        .returning()
+        .then((event) => event[0]);
+
+      await this.cacheManager.del(`event:${id}`);
+      await this.cacheManager.del('events:*');
+      // TODO: Add log to track event updates
+
+      return event;
+    });
+
+    return result;
   }
 
   async findAll({ page, pageSize } = { page: 1, pageSize: 10 }) {

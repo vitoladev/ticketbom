@@ -7,10 +7,12 @@ import {
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
+import { UpdateEventDto } from './dto/update-event.dto';
 
 @Controller('events')
 export class EventsController {
@@ -32,6 +34,11 @@ export class EventsController {
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.eventsService.findOne(id);
+  }
+
+  @Put(':id')
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateEventDto: UpdateEventDto) {
+    return this.eventsService.update(id, updateEventDto);
   }
 
   @Delete(':id')

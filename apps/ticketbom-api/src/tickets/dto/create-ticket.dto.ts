@@ -1,4 +1,5 @@
 import {
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsString,
@@ -27,6 +28,6 @@ export class CreateTicketDto {
   quantityTotal: number;
 
   @IsNotEmpty()
-  @IsString()
+  @IsEnum(['AVAILABLE', 'SOLD_OUT', 'CANCELLED'])
   status: 'AVAILABLE' | 'SOLD_OUT' | 'CANCELLED';
 }
