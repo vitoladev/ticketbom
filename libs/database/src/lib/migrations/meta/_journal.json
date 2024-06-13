@@ -22,6 +22,13 @@
       "when": 1718091200083,
       "tag": "0002_chubby_sasquatch",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1718103011457,
+      "tag": "0003_windy_sentry",
+      "breakpoints": true
     }
   ]
 }

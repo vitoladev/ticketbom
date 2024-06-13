@@ -73,6 +73,7 @@ export const tickets = pgTable('tickets', {
   eventId: uuid('event_id')
     .notNull()
     .references(() => events.id),
+  paymentId: varchar('payment_id', { length: 256 }).notNull(),
   price: integer('price').notNull(),
   quantityTotal: integer('quantity_total').notNull(),
   quantityAvailable: integer('quantity_available').notNull(),
