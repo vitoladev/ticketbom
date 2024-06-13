@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { EventType } from '../types';
+import { getData } from '../lib/api';
 
 const fetchEvents = async () => {
-  const response = await fetch('http://localhost:3000/api/events');
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  const result = await response.json();
-  console.log({ result })
+  // Fetch events from the API with query params page and pageSize
+  const response = await getData<{ data: EventType[] }>('/events', {
+    page: '1',
+    pageSize: '10',
+  });
 
-  return result.data;
+  return response.data;
 };
 
 export const useEvents = () => {
