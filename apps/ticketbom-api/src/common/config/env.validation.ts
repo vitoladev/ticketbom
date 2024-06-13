@@ -36,6 +36,10 @@ class EnvironmentVariables {
   @IsString()
   DB_NAME: string;
 
+
+  @IsString()
+  MERCADOPAGO_ACCESS_TOKEN: string;
+
   @IsString()
   COGNITO_CLIENT_ID: string;
 

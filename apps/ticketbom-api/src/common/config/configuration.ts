@@ -5,6 +5,7 @@ export default () => ({
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_PORT: parseInt(process.env.DB_PORT, 10) || 5432,
   DB_NAME: process.env.DB_NAME,
+  MERCADOPAGO_ACCESS_TOKEN: process.env.MERCADOPAGO_ACCESS_TOKEN,
   COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
   COGNITO_CLIENT_SECRET: process.env.COGNITO_CLIENT_SECRET,
   COGNITO_ISSUER: process.env.COGNITO_ISSUER,
