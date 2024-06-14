@@ -3,46 +3,40 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '@ticketbom/database';
 import { randomUUID } from 'crypto';
-import { eq, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import {
-  EventAlreadyExistsException,
-  EventNotFoundException,
-} from './events.exceptions';
+import { EventNotFoundException } from './events.exceptions';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { EventsRepository } from './events.repository';
 
 @Injectable()
 export class EventsService {
   constructor(
     @Inject('DB_DEV') private db: NodePgDatabase<typeof schema>,
+    private eventsRepository: EventsRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
   async create(createEventDto: CreateEventDto) {
-    try {
-      const event = await this.db
-        .insert(schema.events)
-        .values({
+    const event = this.eventsRepository.withTransaction(async (tx) => {
+      const result = await this.eventsRepository.create(
+        {
           title: createEventDto.title,
           description: createEventDto.description,
           date: createEventDto.date,
           location: createEventDto.location,
           status: createEventDto.status,
           organizerId: randomUUID(),
-        })
-        .returning()
-        .then((event) => event[0]);
-
+        },
+        tx
+      );
       await this.cacheManager.del('events:*');
-      return event;
-    } catch (error) {
-      // TODO: Create a custom filter to handle conflict errors
-      if (error.code === '23505') {
-        throw new EventAlreadyExistsException(error);
-      }
-      throw error;
-    }
+
+      return result;
+    });
+
+    return event;
   }
 
   async update(id: string, updateEventDto: UpdateEventDto) {
@@ -79,33 +73,18 @@ export class EventsService {
 
     const offset = (page - 1) * pageSize;
 
-    const [data, [{ count }]] = await Promise.all([
-      this.db
-        .select({
-          id: schema.events.id,
-          title: schema.events.title,
-          description: schema.events.description,
-          date: schema.events.date,
-          location: schema.events.location,
-          status: schema.events.status,
-        })
-        .from(schema.events)
-        .limit(pageSize)
-        .offset(offset)
-        .execute(),
-      this.db
-        .select({ count: sql<number>`CAST(COUNT(*) AS INTEGER)` })
-        .from(schema.events)
-        .execute(),
-    ]);
-
-    const totalPages = Math.ceil(count / pageSize);
-
-    const result = {
-      data,
-      totalRecords: count,
-      totalPages,
-    };
+    const result = await this.eventsRepository.findWithPagination(
+      {
+        id: schema.events.id,
+        title: schema.events.title,
+        description: schema.events.description,
+        date: schema.events.date,
+        location: schema.events.location,
+        status: schema.events.status,
+      },
+      offset,
+      pageSize
+    );
 
     await this.cacheManager.set(`events:${page}:${pageSize}`, result);
 
@@ -129,12 +108,8 @@ export class EventsService {
     const cachedData = await this.cacheManager.get(`event:${id}`);
     if (cachedData) return cachedData;
 
-    const event = await this.db.query.events.findFirst({
-      where: eq(schema.events.id, id),
-      with: {
-        tickets: true,
-      },
-    });
+    const event = await this.eventsRepository.findOneWithTickets(id);
+
     if (!event) throw new EventNotFoundException(id);
 
     await this.cacheManager.set(`event:${id}`, event);
@@ -143,9 +118,6 @@ export class EventsService {
   }
 
   async remove(id: string) {
-    await this.db
-      .delete(schema.events)
-      .where(eq(schema.events.id, id))
-      .execute();
+    await this.eventsRepository.delete(id);
   }
 }
