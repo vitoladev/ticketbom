@@ -71,8 +71,6 @@ export class EventsService {
 
     if (cachedData) return cachedData;
 
-    const offset = (page - 1) * pageSize;
-
     const result = await this.eventsRepository.findWithPagination(
       {
         id: schema.events.id,
@@ -82,7 +80,7 @@ export class EventsService {
         location: schema.events.location,
         status: schema.events.status,
       },
-      offset,
+      page,
       pageSize
     );
 
