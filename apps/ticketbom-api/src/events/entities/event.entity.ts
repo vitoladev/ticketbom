@@ -11,4 +11,6 @@ export class EventEntity {
   status: EventStatus;
   location: string;
   organizerId?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
