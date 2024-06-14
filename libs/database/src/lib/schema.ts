@@ -21,19 +21,19 @@ export const users = pgTable('user', {
   image: text('image'),
 });
 
-export const eventStatusEnum = pgEnum('event_status', [
+const eventStatusEnum = pgEnum('event_status', [
   'UPCOMING',
   'ONGOING',
   'FINISHED',
 ]);
 
-export const ticketStatusEnum = pgEnum('ticket_status', [
+const ticketStatusEnum = pgEnum('ticket_status', [
   'AVAILABLE',
   'SOLD_OUT',
   'CANCELLED',
 ]);
 
-export const ticketOrderStatusEnum = pgEnum('ticket_order_status', [
+const ticketOrderStatusEnum = pgEnum('ticket_order_status', [
   'RESERVED',
   'PAID',
   'PENDING',
@@ -65,6 +65,8 @@ export const events = pgTable(
   })
 );
 
+export type EventEntity = typeof events.$inferSelect;
+
 export const tickets = pgTable('tickets', {
   id: uuid('id')
     .primaryKey()
@@ -85,6 +87,8 @@ export const tickets = pgTable('tickets', {
     .defaultNow()
     .$onUpdate(() => sql`current_timestamp()`),
 });
+
+export type TicketEntity = typeof tickets.$inferSelect;
 
 export const ticketOrders = pgTable('ticket_orders', {
   id: uuid('id')
@@ -109,16 +113,13 @@ export const ticketsRelations = relations(tickets, ({ one, many }) => ({
   reservations: many(ticketOrders, { relationName: 'reservations' }),
 }));
 
-export const ticketReservationsRelations = relations(
-  ticketOrders,
-  ({ one }) => ({
-    ticket: one(tickets, {
-      fields: [ticketOrders.ticketId],
-      references: [tickets.id],
-    }),
-    user: one(users, { fields: [ticketOrders.userId], references: [users.id] }),
-  })
-);
+export const ticketReservationsRelations = relations(ticketOrders, ({ one }) => ({
+  ticket: one(tickets, {
+    fields: [ticketOrders.ticketId],
+    references: [tickets.id],
+  }),
+  user: one(users, { fields: [ticketOrders.userId], references: [users.id] }),
+}));
 
 export const eventsRelations = relations(events, ({ one, many }) => ({
   organizer: one(users, {
@@ -127,3 +128,5 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
   }),
   tickets: many(tickets),
 }));
+
+export type Tables = 'users' | 'events' | 'tickets' | 'ticket_orders';
