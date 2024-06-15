@@ -75,7 +75,6 @@ export const tickets = pgTable('tickets', {
   eventId: uuid('event_id')
     .notNull()
     .references(() => events.id),
-  paymentId: varchar('payment_id', { length: 256 }).notNull(),
   price: integer('price').notNull(),
   quantityTotal: integer('quantity_total').notNull(),
   quantityAvailable: integer('quantity_available').notNull(),
@@ -94,13 +93,11 @@ export const ticketOrders = pgTable('ticket_orders', {
   id: uuid('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  ticketId: uuid('ticket_id')
-    .notNull()
-    .references(() => tickets.id),
+  paymentIntentId: uuid('payment_intent_id').notNull(),
   userId: uuid('user_id')
     .notNull()
     .references(() => users.id),
-  status: ticketOrderStatusEnum('status').notNull(),
+  status: ticketOrderStatusEnum('status').default('PENDING').notNull(),
   expiresAt: date('expires_at').notNull(),
   createdAt: date('created_at').defaultNow(),
   updatedAt: date('updated_at')
@@ -108,18 +105,31 @@ export const ticketOrders = pgTable('ticket_orders', {
     .$onUpdate(() => sql`current_timestamp()`),
 });
 
+export const ticketOrderDetails = pgTable('ticket_order_details', {
+  id: uuid('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  ticketOrderId: uuid('ticket_order_id')
+    .notNull()
+    .references(() => ticketOrders.id),
+  ticketId: uuid('ticket_id')
+    .notNull()
+    .references(() => tickets.id),
+  quantity: integer('quantity').notNull(),
+});
+
 export const ticketsRelations = relations(tickets, ({ one, many }) => ({
   event: one(events, { fields: [tickets.eventId], references: [events.id] }),
   reservations: many(ticketOrders, { relationName: 'reservations' }),
 }));
 
-export const ticketReservationsRelations = relations(ticketOrders, ({ one }) => ({
-  ticket: one(tickets, {
-    fields: [ticketOrders.ticketId],
-    references: [tickets.id],
-  }),
-  user: one(users, { fields: [ticketOrders.userId], references: [users.id] }),
-}));
+// export const ticketReservationsRelations = relations(ticketOrders, ({ one }) => ({
+//   ticket: one(tickets, {
+//     fields: [ti],
+//     references: [tickets.id],
+//   }),
+//   user: one(users, { fields: [ticketOrders.userId], references: [users.id] }),
+// }));
 
 export const eventsRelations = relations(events, ({ one, many }) => ({
   organizer: one(users, {
@@ -129,4 +139,4 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
   tickets: many(tickets),
 }));
 
-export type Tables = 'users' | 'events' | 'tickets' | 'ticket_orders';
+export type Tables = 'users' | 'events' | 'tickets' | 'ticket_orders' | 'ticketOrderDetails';
