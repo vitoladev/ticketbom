@@ -1,24 +1,24 @@
 # Ticketbom
 Desenvolvi uma PoC de um sistema de gerenciamento de eventos e venda de ingressos focado em festas.
 
-Foram utilizadas as seguintes tecnologias:
+## Tecnologias Utilizadas
 - API
-    -- Nest.js
-    -- Drizzle ORM (PostgreSQL)
-    -- AWS Cognito (Autenticação)
-    -- AWS Lambda
-    -- AWS API Gateway
-    -- Swagger (Documentação)
-    -- class-validator (Validação de dados)
-    -- Mercado Pago (Gateway de Pagamentos)
-    -- Jest (Testes de integração)
+    - Nest.js
+    - Drizzle ORM (PostgreSQL)
+    - AWS Cognito (Autenticação)
+    - AWS Lambda
+    - AWS API Gateway
+    - Swagger (Documentação)
+    - class-validator (Validação de dados)
+    - Mercado Pago (Gateway de Pagamentos)
+    - Jest (Testes de integração)
 - Frontend
-    -- Next.js
-    -- ShadCN UI
-    -- TailwindCSS
-    -- NextAuth
-    -- React Hook Form (Validação de dados)
-    -- React Query
+    - Next.js
+    - ShadCN UI
+    - TailwindCSS
+    - NextAuth
+    - React Hook Form (Validação de dados)
+    - React Query
 
 Backlog de funcionalidades:
 - [ ] Cadastrar eventos com mídias usando S3
