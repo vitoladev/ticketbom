@@ -20,10 +20,10 @@ jobs:
       DB_NAME: postgres
       DB_PASSWORD: testing
       PORT: 3000
-      COGNITO_CLIENT_ID: placeholder
-      COGNITO_CLIENT_SECRET: placeholder
-      COGNITO_ISSUER: placeholder
-      COGNITO_USER_POOL_ID: placeholder
+      COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
+      COGNITO_CLIENT_SECRET:  ${{ secrets.COGNITO_CLIENT_SECRET }}
+      COGNITO_ISSUER: ${{ secrets.COGNITO_ISSUER }}
+      COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
       MERCADOPAGO_ACCESS_TOKEN: placeholder
     services:
       postgres:
