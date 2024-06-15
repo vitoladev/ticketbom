@@ -47,6 +47,9 @@ class EnvironmentVariables {
   COGNITO_CLIENT_SECRET: string;
 
   @IsString()
+  COGNITO_USER_POOL_ID: string;
+
+  @IsString()
   COGNITO_ISSUER: string;
 
   @IsNumber()

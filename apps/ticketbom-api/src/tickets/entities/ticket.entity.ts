@@ -4,7 +4,6 @@ export enum TicketStatus {
   CANCELLED = 'CANCELLED',
 }
 
-
 export class TicketEntity {
   id: string;
   title: string;
