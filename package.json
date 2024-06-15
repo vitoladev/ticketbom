@@ -19,6 +19,7 @@
     "@auth/drizzle-adapter": "^1.1.0",
     "@fastify/static": "^7.0.4",
     "@hookform/resolvers": "^3.3.4",
+    "@nestjs-cognito/auth": "^1.1.6",
     "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.0.2",
     "@nestjs/config": "^3.2.2",

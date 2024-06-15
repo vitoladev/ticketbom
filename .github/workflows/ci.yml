@@ -23,6 +23,7 @@ jobs:
       COGNITO_CLIENT_ID: placeholder
       COGNITO_CLIENT_SECRET: placeholder
       COGNITO_ISSUER: placeholder
+      COGNITO_USER_POOL_ID: placeholder
       MERCADOPAGO_ACCESS_TOKEN: placeholder
     services:
       postgres:
