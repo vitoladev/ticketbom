@@ -14,30 +14,27 @@ export class PaymentsService {
     });
   }
 
-  async createProduct({
-    id,
-    title,
-    price,
-    quantity,
+  async createPaymentIntent({
+    items,
   }: {
-    id: string;
-    title: string;
-    price: number;
-    quantity: number;
+    items: {
+      id: string;
+      title: string;
+      price: number;
+      quantity: number;
+    }[]
   }) {
     const preferenceEndpoint = new Preference(this.client);
     const preference = await preferenceEndpoint.create({
       body: {
-        items: [
-          {
-            id,
-            title: title,
-            quantity,
-            currency_id: 'BRL',
-            unit_price: price,
-          },
-        ],
-      },
+        items: items.map((item) => ({
+          id: item.id,
+          title: item.title,
+          unit_price: item.price,
+          currency_id: 'BRL',
+          quantity: item.quantity,
+        }))
+        },
     });
 
     return preference;
