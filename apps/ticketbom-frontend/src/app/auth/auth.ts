@@ -5,6 +5,24 @@ import CognitoProvider from 'next-auth/providers/cognito';
 // import { eq } from 'drizzle-orm';
 // import { db } from '../../lib/db';
 
+// Extend the Session interface
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      accessToken: string;
+    };
+  }
+
+  interface JWT {
+    idToken: string;
+    accessToken: string;
+    refreshToken: string;
+  }
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   // adapter: DrizzleAdapter(db),
   session: {
@@ -30,11 +48,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async session({ token, session }) {
-      if (token) {
-        session.user.id = token.id as string;
+    async jwt({ token, account }) {
+      console.log({ token, account });
+      if (account) {
+        token.idToken = account.id_token;
+        token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
       }
-
+      return token;
+    },
+    async session({ session, token }) {
+      console.log({ session, token });
+      session.user.id = token.sub || '';
+      session.user.accessToken = token.idToken as string;
       return session;
     },
   },
