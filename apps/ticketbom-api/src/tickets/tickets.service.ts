@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -34,6 +34,28 @@ export class TicketsService {
     });
   }
 
+  async updateTicketQuantityAction(
+    {
+      ticketId,
+      action,
+      quantity,
+    }: {
+      ticketId: string;
+      action: 'RESERVE' | 'RELEASE';
+      quantity: number;
+    },
+    tx?: DrizzleTransactionScope
+  ) {
+    await this.ticketsRepository.updateTicketQuantityAction(
+      {
+        ticketId,
+        quantity,
+        action,
+      },
+      tx
+    );
+  }
+
   async verifyIfTicketIsAvailable(id: string, tx?: DrizzleTransactionScope) {
     const ticket = await this.ticketsRepository.findOne(id, tx);
 
@@ -53,6 +75,10 @@ export class TicketsService {
     await this.cacheManager.set(`tickets:event:${eventId}`, tickets);
 
     return tickets;
+  }
+
+  async findByIds(ids: string[], tx?: DrizzleTransactionScope) {
+    return this.ticketsRepository.findByIds(ids, tx);
   }
 
   async findOne(id: string) {
