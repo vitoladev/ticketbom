@@ -15,8 +15,10 @@ export class PaymentsService {
   }
 
   async createPaymentIntent({
+    externalReference,
     items,
   }: {
+    externalReference: string;
     items: {
       id: string;
       title: string;
@@ -27,6 +29,7 @@ export class PaymentsService {
     const preferenceEndpoint = new Preference(this.client);
     const preference = await preferenceEndpoint.create({
       body: {
+        external_reference: externalReference,
         items: items.map((item) => ({
           id: item.id,
           title: item.title,
