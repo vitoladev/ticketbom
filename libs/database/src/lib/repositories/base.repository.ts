@@ -39,7 +39,7 @@ export interface IRepository<
 
   update(
     id: string,
-    entity: Partial<TOutput>,
+    entity: Partial<TInput>,
     transactionScope?: DrizzleTransactionScope
   ): Promise<TOutput>;
 
@@ -123,7 +123,7 @@ export class BaseRepository<
 
   async update(
     id: string,
-    entity: Partial<TOutput>,
+    entity: Partial<TInput>,
     transactionScope?: DrizzleTransactionScope
   ): Promise<TOutput> {
     const dbScope = transactionScope || this.db;
