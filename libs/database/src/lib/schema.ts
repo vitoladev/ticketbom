@@ -145,6 +145,14 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
   tickets: many(tickets),
 }));
 
+export const tables = {
+  users,
+  events,
+  tickets,
+  ticketOrders,
+  ticketOrderDetails,
+};
+
 export type Tables =
   | 'users'
   | 'events'
