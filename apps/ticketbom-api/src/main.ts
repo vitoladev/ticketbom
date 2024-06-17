@@ -13,12 +13,15 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from './app/app.module';
 import { CatchAllExceptionFilter } from './common/filters/catch-all-exception.filter';
+import { setupGracefulShutdown } from 'nestjs-graceful-shutdown';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true })
   );
+  setupGracefulShutdown({ app });
+
   const globalPrefix = 'api';
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
@@ -31,7 +34,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-
 
   const port = process.env.PORT || 3000;
 

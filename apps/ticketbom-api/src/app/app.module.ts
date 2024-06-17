@@ -1,9 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { DrizzlePGModule } from '../common/drizzle/drizzle.module';
-import * as schema from '@ticketbom/database';
 import { UsersModule } from '../users/users.module';
 import { EventsModule } from '../events/events.module';
 import { TicketsModule } from '../tickets/tickets.module';
@@ -12,18 +9,23 @@ import { ConfigModule } from '@nestjs/config';
 import { validateEnvConfig } from '../common/config/env.validation';
 import configuration from '../common/config/configuration';
 import { CatchAllExceptionFilter } from '../common/filters/catch-all-exception.filter';
+import { HealthModule } from '../health/health.module';
+import { GracefulShutdownModule } from 'nestjs-graceful-shutdown';
 
 @Module({
   imports: [
+    GracefulShutdownModule.forRoot(),
     ConfigModule.forRoot({
       validate: validateEnvConfig,
       load: [configuration],
       isGlobal: true,
     }),
-    DrizzlePGModule.register({
+    HealthModule,
+    DrizzlePGModule.registerAsync({
       tag: 'DB_DEV',
-      connection: 'client',
-      config: { schema: { ...schema } },
+      useFactory: () => ({
+        connection: 'client',
+      }),
     }),
     CacheModule.register({
       isGlobal: true,
@@ -32,9 +34,7 @@ import { CatchAllExceptionFilter } from '../common/filters/catch-all-exception.f
     EventsModule,
     TicketsModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: 'APP_FILTER',
       useClass: CatchAllExceptionFilter,
