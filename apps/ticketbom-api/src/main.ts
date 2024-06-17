@@ -12,7 +12,7 @@ import {
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from './app/app.module';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { CatchAllExceptionFilter } from './common/filters/catch-all-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -22,7 +22,7 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new CatchAllExceptionFilter());
   app.setGlobalPrefix(globalPrefix);
 
   const config = new DocumentBuilder()

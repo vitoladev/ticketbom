@@ -8,7 +8,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { EventAlreadyExistsException } from '../../events/events.exceptions';
 
 @Catch()
-export class HttpExceptionFilter implements ExceptionFilter {
+export class CatchAllExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<FastifyReply>();
@@ -18,16 +18,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
       const isInternal = status === 500;
       if (isInternal) {
-        console.log(exception);
+        return response.status(status).send({
+          statusCode: status,
+          message: 'Internal Server Error',
+          timestamp: new Date().toISOString(),
+        });
       }
 
-      const message = isInternal ? 'Internal Server Error' : exception.message;
+      const badRequestResponse = exception.getResponse();
 
-      response.status(status).send({
-        statusCode: status,
-        message,
-        timestamp: new Date().toISOString(),
-      });
+      return response.status(status).send(badRequestResponse);
     }
 
     if (

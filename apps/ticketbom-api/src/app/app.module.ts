@@ -11,7 +11,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
 import { validateEnvConfig } from '../common/config/env.validation';
 import configuration from '../common/config/configuration';
-import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
+import { CatchAllExceptionFilter } from '../common/filters/catch-all-exception.filter';
 
 @Module({
   imports: [
@@ -37,7 +37,7 @@ import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
     AppService,
     {
       provide: 'APP_FILTER',
-      useClass: HttpExceptionFilter,
+      useClass: CatchAllExceptionFilter,
     },
   ],
 })
