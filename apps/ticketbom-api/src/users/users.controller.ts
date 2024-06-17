@@ -23,7 +23,7 @@ export class UsersController {
 
   @Get('me')
   @Authentication()
-  me(@CognitoUser(['groups', 'username', 'email']) user) {
+  me(@CognitoUser() user) {
     return user;
   }
 

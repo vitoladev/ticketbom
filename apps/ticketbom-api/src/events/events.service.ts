@@ -18,7 +18,7 @@ export class EventsService {
   ) {}
 
   async create(createEventDto: CreateEventDto) {
-    const event = this.eventsRepository.withTransaction(async (tx) => {
+    const event = await this.eventsRepository.withTransaction(async (tx) => {
       const result = await this.eventsRepository.create(
         {
           title: createEventDto.title,

@@ -11,7 +11,6 @@ export class DrizzlePGService implements OnApplicationShutdown {
   databaseInstance?: Client | Pool;
 
   onApplicationShutdown(signal?: string) {
-    console.log({ instance: this.databaseInstance, signal })
     Logger.log('Shutting down drizzle: ' + signal);
     if (signal === 'SIGINT' || signal === 'SIGTERM') {
       this.databaseInstance?.end((err) => {

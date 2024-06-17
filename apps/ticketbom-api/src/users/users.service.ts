@@ -1,13 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '@ticketbom/database';
 import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class UsersService {
-  constructor(@Inject('DB_DEV') private db: NodePgDatabase<typeof schema>) {}
+  constructor(@Inject('DB_DEV') private db: schema.DrizzleDatabase) {}
 
   async create({ name, email, birthDate, document }: CreateUserDto) {
     const user = await this.db

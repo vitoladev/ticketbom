@@ -8,8 +8,11 @@ export default () => ({
     database: process.env.DB_NAME,
   },
   MERCADOPAGO_ACCESS_TOKEN: process.env.MERCADOPAGO_ACCESS_TOKEN,
-  COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
-  COGNITO_CLIENT_SECRET: process.env.COGNITO_CLIENT_SECRET,
-  COGNITO_ISSUER: process.env.COGNITO_ISSUER,
+  cognito: {
+    clientId: process.env.COGNITO_CLIENT_ID,
+    clientSecret: process.env.COGNITO_CLIENT_SECRET,
+    userPoolId: process.env.COGNITO_USER_POOL_ID,
+    issuer: process.env.COGNITO_ISSUER,  
+  },
   PORT: parseInt(process.env.PORT, 10) || 3000,
 });
