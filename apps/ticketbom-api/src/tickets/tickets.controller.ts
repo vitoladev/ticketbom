@@ -4,19 +4,17 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 
 @Controller('tickets')
 export class TicketsController {
-  constructor(private readonly ticketsService: TicketsService) {
-  }
+  constructor(private readonly ticketsService: TicketsService) {}
 
   @Post()
   create(@Body() createTicketDto: CreateTicketDto) {
     return this.ticketsService.create(createTicketDto);
   }
 
-  @Get('event/:eventId')
-  findByEventId(@Param('eventId') eventId: string) {
-    return this.ticketsService.findByEventId(eventId);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.ticketsService.findOne(id);
   }
-
 
   @Delete(':id')
   remove(@Param('id') id: string) {
