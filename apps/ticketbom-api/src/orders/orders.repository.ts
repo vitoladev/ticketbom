@@ -1,79 +1,82 @@
 import { Inject, Injectable } from '@nestjs/common';
-import * as schema from '@ticketbom/database';
 import {
   BaseRepository,
   DrizzleTransactionScope,
+  DrizzleDatabase,
   ticketOrderDetails,
   ticketOrders,
-  tickets,
+  IRepository,
+  TicketOrderEntity,
+  TicketOrderDetailEntity,
 } from '@ticketbom/database';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { addMinutes } from 'date-fns';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
+
+type OrderStatus = 'RESERVED' | 'PAID' | 'PENDING' | 'REFUNDED';
+
+type ChangeStatusParams = {
+  id: string;
+  status: OrderStatus;
+  currentStatus?: OrderStatus;
+};
+
+export interface IOrdersRepository
+  extends IRepository<typeof ticketOrders._.config> {
+  createOrderDetails(
+    {
+      orderId,
+      tickets,
+    }: {
+      orderId: string;
+      tickets: CreateOrderDto['tickets'];
+    },
+    transactionScope: DrizzleTransactionScope
+  ): Promise<TicketOrderDetailEntity[]>;
+
+  changeStatus(
+    { id, status, currentStatus }: ChangeStatusParams,
+    tx?: DrizzleTransactionScope
+  ): Promise<TicketOrderEntity>;
+}
+
+export const IOrdersRepository = Symbol('IOrdersRepository');
 
 @Injectable()
-export class OrdersRepository extends BaseRepository<
-  typeof ticketOrders._.config
-> {
-  constructor(@Inject('DB_DEV') db: NodePgDatabase<typeof schema>) {
+export class OrdersRepository
+  extends BaseRepository<typeof ticketOrders._.config>
+  implements IOrdersRepository
+{
+  constructor(@Inject('DB_DEV') db: DrizzleDatabase) {
     super(db, 'ticket_orders');
   }
 
-  async startOrder(
-    dto: CreateOrderDto & { id: string; paymentIntentId: string },
-    tx: DrizzleTransactionScope
+  async createOrderDetails(
+    {
+      orderId,
+      tickets,
+    }: {
+      orderId: string;
+      tickets: CreateOrderDto['tickets'];
+    },
+    transactionScope: DrizzleTransactionScope
   ) {
-    const order = await this.create(
-      {
-        id: dto.id,
-        userId: dto.userId,
-        paymentIntentId: dto.paymentIntentId,
-        expiresAt: addMinutes(new Date(), 15).toISOString(),
-        status: 'RESERVED',
-      },
-      tx
-    );
-
-    const ticketDetails = dto.tickets.map((dto) => ({
-      ticketOrderId: order.id,
-      ticketId: dto.ticketId,
-      quantity: dto.quantity,
+    const ticketDetails = tickets.map((ticket) => ({
+      ticketOrderId: orderId,
+      ticketId: ticket.ticketId,
+      quantity: ticket.quantity,
     }));
 
-    const orderDetails = await tx
+    const orderDetails = await transactionScope
       .insert(ticketOrderDetails)
       .values(ticketDetails)
       .returning()
       .execute();
 
-    for (const detail of orderDetails) {
-      await tx
-        .update(tickets)
-        .set({
-          quantityAvailable: sql`${tickets.quantityAvailable} - ${detail.quantity}`,
-          quantityReserved: sql`${tickets.quantityReserved} + ${detail.quantity}`,
-        })
-        .where(eq(schema.tickets.id, detail.ticketId))
-        .execute();
-    }
-
-    return {
-      ...order,
-      details: orderDetails,
-    };
+    return orderDetails;
   }
 
   async changeStatus(
-    {
-      id,
-      status,
-      currentStatus,
-    }: {
-      id: string;
-      status: 'RESERVED' | 'PAID' | 'PENDING' | 'REFUNDED';
-      currentStatus?: 'RESERVED' | 'PAID' | 'PENDING' | 'REFUNDED';
-    },
+    { id, status, currentStatus }: ChangeStatusParams,
     tx?: DrizzleTransactionScope
   ) {
     const dbScope = tx || this.db;
@@ -97,3 +100,8 @@ export class OrdersRepository extends BaseRepository<
     return order;
   }
 }
+
+export const OrdersRepositoryProvider = {
+  provide: IOrdersRepository,
+  useClass: OrdersRepository,
+};
