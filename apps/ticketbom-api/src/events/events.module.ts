@@ -1,10 +1,17 @@
+import { TicketsRepositoryProvider } from './../tickets/tickets.repository';
 import { Module } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { EventsController } from './events.controller';
-import { EventsRepository } from './events.repository';
+import { TicketsService } from '../tickets/tickets.service';
+import { EventsRepositoryProvider } from './events.repository';
 
 @Module({
   controllers: [EventsController],
-  providers: [EventsRepository, EventsService],
+  providers: [
+    TicketsRepositoryProvider,
+    TicketsService,
+    EventsRepositoryProvider,
+    EventsService,
+  ],
 })
 export class EventsModule {}

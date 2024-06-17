@@ -52,6 +52,11 @@ export class EventsController {
     return this.eventsService.findOne(id);
   }
 
+  @Get(':id/tickets')
+  findManyTicketsByEventId(@Param('id', ParseUUIDPipe) id: string) {
+    return this.eventsService.findManyTicketsByEventId(id);
+  }
+
   @Put(':id')
   update(
     @Param('id', ParseUUIDPipe) id: string,
