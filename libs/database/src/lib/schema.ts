@@ -33,6 +33,8 @@ const ticketStatusEnum = pgEnum('ticket_status', [
   'CANCELLED',
 ]);
 
+export type EventStatus = keyof typeof eventStatusEnum.enumValues;
+
 const ticketOrderStatusEnum = pgEnum('ticket_order_status', [
   'RESERVED',
   'PAID',
@@ -139,4 +141,9 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
   tickets: many(tickets),
 }));
 
-export type Tables = 'users' | 'events' | 'tickets' | 'ticket_orders' | 'ticketOrderDetails';
+export type Tables =
+  | 'users'
+  | 'events'
+  | 'tickets'
+  | 'ticket_orders'
+  | 'ticketOrderDetails';

@@ -1,5 +1,4 @@
-import { DrizzleTransactionScope, Maybe } from '../types';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { DrizzleDatabase, DrizzleTransactionScope, Maybe } from '../types';
 import * as schema from '../schema';
 import { Tables } from '../schema';
 import {
@@ -28,13 +27,27 @@ export interface IRepository<
     pageSize: number
   ): Promise<PaginationOutput<TOutput>>;
 
-  findOne(id: string): Promise<Maybe<TOutput>>;
+  findOne(
+    id: string,
+    transactionScope?: DrizzleTransactionScope
+  ): Promise<Maybe<TOutput>>;
 
-  create(entity: TInput): Promise<TOutput>;
+  create(
+    entity: TInput,
+    transactionScope?: DrizzleTransactionScope
+  ): Promise<TOutput>;
 
-  update(id: string, entity: TOutput): Promise<TOutput>;
+  update(
+    id: string,
+    entity: Partial<TOutput>,
+    transactionScope?: DrizzleTransactionScope
+  ): Promise<TOutput>;
 
-  delete(id: string): Promise<void>;
+  delete(id: string, transactionScope?: DrizzleTransactionScope): Promise<void>;
+
+  withTransaction<T>(
+    callback: (tx: DrizzleTransactionScope) => Promise<T>
+  ): Promise<T>;
 }
 
 export class BaseRepository<
@@ -46,7 +59,7 @@ export class BaseRepository<
   private table = schema[this.tableName];
 
   constructor(
-    protected db: NodePgDatabase<typeof schema>,
+    protected db: DrizzleDatabase,
     private tableName: Tables
   ) {}
 
@@ -110,7 +123,7 @@ export class BaseRepository<
 
   async update(
     id: string,
-    entity: TOutput,
+    entity: Partial<TOutput>,
     transactionScope?: DrizzleTransactionScope
   ): Promise<TOutput> {
     const dbScope = transactionScope || this.db;
