@@ -107,6 +107,8 @@ export const ticketOrders = pgTable('ticket_orders', {
     .$onUpdate(() => sql`current_timestamp()`),
 });
 
+export type TicketOrderEntity = typeof ticketOrders.$inferSelect;
+
 export const ticketOrderDetails = pgTable('ticket_order_details', {
   id: uuid('id')
     .primaryKey()
@@ -119,6 +121,8 @@ export const ticketOrderDetails = pgTable('ticket_order_details', {
     .references(() => tickets.id),
   quantity: integer('quantity').notNull(),
 });
+
+export type TicketOrderDetailEntity = typeof ticketOrderDetails.$inferSelect;
 
 export const ticketsRelations = relations(tickets, ({ one, many }) => ({
   event: one(events, { fields: [tickets.eventId], references: [events.id] }),
