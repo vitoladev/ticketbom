@@ -1,70 +1,104 @@
-import { Injectable } from '@nestjs/common';
-import { OrdersRepository } from './orders.repository';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { IOrdersRepository } from './orders.repository';
+import { CreateOrderDto, TicketOrderDto } from './dto/create-order.dto';
 import { PaymentsService } from '../payments/payments.service';
 import { randomUUID } from 'crypto';
-import { tickets } from '@ticketbom/database';
-import { sql } from 'drizzle-orm';
+import {
+  DrizzleTransactionScope,
+} from '@ticketbom/database';
+import { TicketsService } from '../tickets/tickets.service';
+import { addMinutes } from 'date-fns';
 
 @Injectable()
 export class OrdersService {
   constructor(
-    private ordersRepository: OrdersRepository,
-    private paymentGateway: PaymentsService
+    @Inject(IOrdersRepository) private ordersRepository: IOrdersRepository,
+    private ticketsService: TicketsService,
+    private paymentGatewayService: PaymentsService
   ) {}
 
-  async start(createOrderDto: CreateOrderDto) {
+  async sendOrderPaymentIntent(
+    {
+      orderId,
+      orderTickets,
+    }: {
+      orderId: string;
+      orderTickets: TicketOrderDto[];
+    },
+    tx: DrizzleTransactionScope
+  ) {
+    const ticketDetails = await this.ticketsService.findByIds(
+      orderTickets.map((t) => t.ticketId),
+      tx
+    );
+
+    const orderedTickets = ticketDetails.map(({ id, title, price }) => {
+      const { quantity } = orderTickets.find((t) => t.ticketId === id);
+
+      return { id, title, price, quantity };
+    });
+
+    const paymentIntent = await this.paymentGatewayService.createPaymentIntent({
+      externalReference: orderId,
+      items: orderedTickets,
+    });
+
+    return paymentIntent;
+  }
+
+  async startOrder({ userId, tickets }: CreateOrderDto) {
     await this.ordersRepository.withTransaction(async (tx) => {
-      const selectedTickets = await tx
-        .select()
-        .from(tickets)
-        .where(sql`id IN (${createOrderDto.tickets.map((t) => t.ticketId)})`)
-        .execute();
-
-      const orderedTickets = selectedTickets.map((ticket) => {
-        const selectedTicket = createOrderDto.tickets.find(
-          (t) => t.ticketId === ticket.id
-        );
-
-        return {
-          id: ticket.id,
-          title: ticket.title,
-          price: ticket.price,
-          quantity: selectedTicket.quantity,
-        };
-      });
-
       const orderId = randomUUID();
-      const paymentIntent = await this.paymentGateway.createPaymentIntent({
-        items: orderedTickets,
-      });
 
-      const order = this.ordersRepository.startOrder(
+      const paymentIntent = await this.sendOrderPaymentIntent(
+        { orderId, orderTickets: tickets },
+        tx
+      );
+
+      const order = await this.ordersRepository.create(
         {
           id: orderId,
-          ...createOrderDto,
+          userId,
           paymentIntentId: paymentIntent.id,
+          expiresAt: addMinutes(new Date(), 15).toISOString(),
+          status: 'PENDING',
         },
         tx
       );
+
+      const orderDetails = await this.ordersRepository.createOrderDetails(
+        { orderId: order.id, tickets },
+        tx
+      );
+
+      for (const detail of orderDetails) {
+        await this.ticketsService.updateTicketQuantityAction(
+          {
+            ticketId: detail.ticketId,
+            quantity: detail.quantity,
+            action: 'RESERVE',
+          },
+          tx
+        );
+      }
 
       return order;
     });
   }
 
-  async complete(completeOrderDto: {
-    id: string;
-    status: 'PAID' | 'REFUNDED';
-  }) {
-    await this.ordersRepository.withTransaction(async (tx) => {
-      return this.ordersRepository.changeStatus(
-        {
-          id: completeOrderDto.id,
-          status: completeOrderDto.status,
-          currentStatus: 'RESERVED',
-        },
-        tx
-      );
-    });
-  }
+  // async complete(completeOrderDto: {
+  //   id: string;
+  //   status: 'PAID' | 'REFUNDED';
+  // }) {
+  //   await this.ordersRepository.withTransaction(async (tx) => {
+  //     return this.ordersRepository.changeStatus(
+  //       {
+  //         id: completeOrderDto.id,
+  //         status: completeOrderDto.status,
+  //         currentStatus: 'RESERVED',
+  //       },
+  //       tx
+  //     );
+  //   });
+  // }
 }
