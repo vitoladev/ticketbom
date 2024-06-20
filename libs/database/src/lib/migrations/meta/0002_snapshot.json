@@ -1,7 +1,5 @@
 {
-  "id": "c9ad267d-dc31-4361-adf4-4112a6c3767e",
-  "prevId": "4be10db8-b343-47d3-8fcb-b2b1b736ccd4",
-  "version": "6",
+  "version": "7",
   "dialect": "postgresql",
   "tables": {
     "public.events": {
@@ -69,12 +67,25 @@
       },
       "indexes": {
         "unique_title_and_date_idx": {
-          "name": "unique_title_and_date_idx",
           "columns": [
-            "title",
-            "date"
+            {
+              "expression": "title",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": true
+          "with": {},
+          "name": "unique_title_and_date_idx",
+          "isUnique": true,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {},
@@ -82,10 +93,10 @@
       "uniqueConstraints": {
         "events_title_unique": {
           "name": "events_title_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "title"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
@@ -144,28 +155,28 @@
         "ticket_orders_ticket_id_tickets_id_fk": {
           "name": "ticket_orders_ticket_id_tickets_id_fk",
           "tableFrom": "ticket_orders",
-          "tableTo": "tickets",
           "columnsFrom": [
             "ticket_id"
           ],
+          "tableTo": "tickets",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "ticket_orders_user_id_user_id_fk": {
           "name": "ticket_orders_user_id_user_id_fk",
           "tableFrom": "ticket_orders",
-          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -253,15 +264,15 @@
         "tickets_event_id_events_id_fk": {
           "name": "tickets_event_id_events_id_fk",
           "tableFrom": "tickets",
-          "tableTo": "events",
           "columnsFrom": [
             "event_id"
           ],
+          "tableTo": "events",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -340,8 +351,10 @@
   },
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "c9ad267d-dc31-4361-adf4-4112a6c3767e",
+  "prevId": "4be10db8-b343-47d3-8fcb-b2b1b736ccd4"
 }

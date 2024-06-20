@@ -67,6 +67,14 @@ export const events = pgTable(
   })
 );
 
+export const eventsRelations = relations(events, ({ one, many }) => ({
+  organizer: one(users, {
+    fields: [events.organizerId],
+    references: [users.id],
+  }),
+  tickets: many(tickets, { relationName: 'tickets' }),
+}));
+
 export type EventEntity = typeof events.$inferSelect;
 
 export const tickets = pgTable('tickets', {
@@ -136,14 +144,6 @@ export const ticketsRelations = relations(tickets, ({ one, many }) => ({
 //   }),
 //   user: one(users, { fields: [ticketOrders.userId], references: [users.id] }),
 // }));
-
-export const eventsRelations = relations(events, ({ one, many }) => ({
-  organizer: one(users, {
-    fields: [events.organizerId],
-    references: [users.id],
-  }),
-  tickets: many(tickets),
-}));
 
 export const tables = {
   users,
