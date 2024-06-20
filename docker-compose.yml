@@ -1,12 +1,19 @@
 version: '3.8'
 services:
+  redis:
+    image: redis
+    restart: always
+    environment:
+      REDIS_PASSWORD: ticketredis
+    ports:
+      - 6379:6379
   db:
     image: postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: vehicle
+      POSTGRES_PASSWORD: ticket
     volumes:
       - data:/var/lib/postgresql/data
     ports:
