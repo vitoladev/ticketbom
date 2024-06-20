@@ -9,6 +9,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import fastifyHelmet from '@fastify/helmet';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from './app/app.module';
@@ -20,6 +21,8 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({ logger: true })
   );
+  await app.register(fastifyHelmet);
+
   setupGracefulShutdown({ app });
 
   const globalPrefix = 'api';
