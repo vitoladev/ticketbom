@@ -92,7 +92,6 @@ export class EventsService {
     if (cachedData) return cachedData;
 
     const event = await this.eventsRepository.findOneWithTickets(id);
-
     if (!event) throw new EventNotFoundException(id);
 
     await this.cacheManager.set(`event:${id}`, event);

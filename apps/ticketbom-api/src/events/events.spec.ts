@@ -1,15 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { EventsModule } from './events.module';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { AppModule } from '../app/app.module';
-import { EventsModule } from './events.module';
 import { faker } from '@faker-js/faker';
 import { EventEntity, EventStatus } from './entities/event.entity';
-import { ValidationPipe } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { randomUUID } from 'crypto';
+import { setupTestAppConfig, setupTestModuleFixture } from '../../test';
 
 const eventFactory = (): EventEntity => ({
   title: faker.lorem.words(3),
@@ -25,19 +23,13 @@ const eventFactory = (): EventEntity => ({
 
 describe('Events', () => {
   let app: NestFastifyApplication;
-
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, EventsModule],
-    }).compile();
+    const moduleFixture = await setupTestModuleFixture(EventsModule);
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
       new FastifyAdapter()
     );
-    app.useGlobalPipes(new ValidationPipe());
-
-    await app.init();
-    await app.getHttpAdapter().getInstance().ready();
+    await setupTestAppConfig(app);
   });
 
   afterAll(async () => {
