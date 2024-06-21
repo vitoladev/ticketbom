@@ -16,9 +16,7 @@
       {
         "name": "next"
       }
-    ],
-    "typeRoots": ["./src/@types", "./node_modules/@types"],
-    "types": ["jest", "node"]
+    ]
   },
   "paths": {
     "@/*": ["./*"]

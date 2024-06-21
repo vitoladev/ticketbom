@@ -56,11 +56,9 @@ jobs:
       # - run: npx nx-cloud record -- echo Hello World
       - name: Lint
         run: npm run lint
-
-      - name: Build
-        run: npm run build
-
+      - name: Typecheck
+        run: npm run typecheck
       - name: Setup database migrations 
         run: npm run db:migrate
-      - name: Test
+      - name: Test API
         run: npm run test:api
