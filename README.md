@@ -28,6 +28,9 @@ Backlog de funcionalidades:
 ## Como executar
 ```bash
 docker compose up -d
+cp .env.example .env
+
+npm install
 npm run db:migrate
 
 # Frontend
