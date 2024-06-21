@@ -10,7 +10,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import fastifyHelmet from '@fastify/helmet';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app/app.module';
 import { CatchAllExceptionFilter } from './common/filters/catch-all-exception.filter';
@@ -31,12 +31,16 @@ async function bootstrap() {
   app.useGlobalFilters(new CatchAllExceptionFilter());
   app.setGlobalPrefix(globalPrefix);
 
-  const config = new DocumentBuilder()
-    .setTitle('Ticketbom API')
-    .setVersion('1.0')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  const swaggerEnabled = process.env.SWAGGER_ENABLED === 'true';
+
+  if (swaggerEnabled) {
+    const config = new DocumentBuilder()
+      .setTitle('Ticketbom API')
+      .setVersion('1.0')
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, document);
+  }
 
   const port = process.env.PORT || 3000;
 
@@ -44,6 +48,10 @@ async function bootstrap() {
   Logger.log(
     `🚀 Application is running on: ${await app.getUrl()}/${globalPrefix}`
   );
+  Logger.log(`📚 Swagger docs ${swaggerEnabled ? 'enabled' : 'disabled'}!`);
+  if (swaggerEnabled) {
+    Logger.log(`📚 Swagger docs running on: ${await app.getUrl()}/docs`);
+  }
 }
 
 bootstrap();
