@@ -6,8 +6,7 @@ import { EventsModule } from '../events/events.module';
 import { TicketsModule } from '../tickets/tickets.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
-import { validateEnvConfig } from '../common/config/env.validation';
-import configuration from '../common/config/configuration';
+import { configurationFn, validateEnvConfig } from '../common/config';
 import { CatchAllExceptionFilter } from '../common/filters/catch-all-exception.filter';
 import { HealthModule } from '../health/health.module';
 import { GracefulShutdownModule } from 'nestjs-graceful-shutdown';
@@ -17,7 +16,7 @@ import { GracefulShutdownModule } from 'nestjs-graceful-shutdown';
     GracefulShutdownModule.forRoot(),
     ConfigModule.forRoot({
       validate: validateEnvConfig,
-      load: [configuration],
+      load: [configurationFn],
       isGlobal: true,
     }),
     HealthModule,

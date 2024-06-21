@@ -1,4 +1,4 @@
-export default () => ({
+export const configurationFn = () => ({
   NODE_ENV: process.env.NODE_ENV,
   database: {
     host: process.env.DB_HOST,
