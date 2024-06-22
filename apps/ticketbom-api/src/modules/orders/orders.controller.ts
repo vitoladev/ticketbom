@@ -9,7 +9,8 @@ export class OrdersController {
 
   @Post()
   @Authentication()
-  async createOrder(@Body() dto: StartOrderDto, @CognitoUser() user) {
+  async startOrder(@Body() dto: StartOrderDto, @CognitoUser() user) {
+    console.log({ user });
     return this.ordersService.startOrder({
       userId: user.sub,
       tickets: dto.tickets,

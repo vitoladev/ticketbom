@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IOrdersRepository } from './orders.repository';
 import { CreateOrderDto, TicketOrderDto } from './dto/create-order.dto';
-import { PaymentsService } from '../payments/payments.service';
+import { PaymentsService } from '../../payments/payments.service';
 import { randomUUID } from 'crypto';
 import {
   DrizzleTransactionScope,

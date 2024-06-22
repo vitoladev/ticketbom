@@ -15,13 +15,11 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@ticketbom/database": ["libs/database/src/index.ts"],
       "@ticketbom/ui-kit/ui": ["libs/ui-kit/ui/src/index.ts"],
       "@ticketbom/ui-kit/ui/*": ["libs/ui-kit/ui/src/*"],
-      "@ticketbom/ui-kit/util": [
-        "libs/ui-kit/util/src/index.ts"
-      ],
-      "@ticketbom/ui-kit/util/*": ["libs/ui-kit/util/src/*"],
-      "@ticketbom/database": ["libs/database/src/index.ts"]
+      "@ticketbom/ui-kit/util": ["libs/ui-kit/util/src/index.ts"],
+      "@ticketbom/ui-kit/util/*": ["libs/ui-kit/util/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

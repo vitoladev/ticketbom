@@ -12,8 +12,8 @@ import {
 import fastifyHelmet from '@fastify/helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-import { AppModule } from './app/app.module';
-import { CatchAllExceptionFilter } from './common/filters/catch-all-exception.filter';
+import { AppModule } from './app.module';
+import { CatchAllExceptionFilter } from '@common/filters/catch-all-exception.filter';
 import { setupGracefulShutdown } from 'nestjs-graceful-shutdown';
 
 async function bootstrap() {
@@ -25,7 +25,10 @@ async function bootstrap() {
 
   setupGracefulShutdown({ app });
 
-  const globalPrefix = 'api';
+  // prefix with enverionment variable
+  const API_PREFIX = process.env.API_PREFIX || 'api';
+
+  const globalPrefix = API_PREFIX;
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new CatchAllExceptionFilter());

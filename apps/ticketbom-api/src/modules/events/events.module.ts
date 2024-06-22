@@ -1,4 +1,4 @@
-import { TicketsRepositoryProvider } from './../tickets/tickets.repository';
+import { TicketsRepositoryProvider } from '../tickets/tickets.repository';
 import { Module } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { EventsController } from './events.controller';

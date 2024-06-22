@@ -12,8 +12,8 @@ export type DrizzleTransactionScope = PgTransaction<
   ExtractTablesWithRelations<DrizzleSchema>
 >;
 
-
 export type DrizzleDatabase = NodePgDatabase<DrizzleSchema>;
 
+export const DrizzleDatabase = Symbol('DATABASE');
 
 export type Maybe<T> = T | null | undefined;

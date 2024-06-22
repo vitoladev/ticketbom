@@ -6,7 +6,7 @@ import { Cache } from 'cache-manager';
 import { EventNotFoundException } from './events.exceptions';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { events } from '@ticketbom/database';
-import { TicketsService } from '../tickets/tickets.service';
+import { TicketsService } from '@modules/tickets/tickets.service';
 import { IEventsRepository } from './events.repository';
 
 @Injectable()

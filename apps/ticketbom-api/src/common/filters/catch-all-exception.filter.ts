@@ -5,7 +5,7 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { EventAlreadyExistsException } from '../../events/events.exceptions';
+import { EventAlreadyExistsException } from '@modules/events/events.exceptions';
 
 @Catch()
 export class CatchAllExceptionFilter implements ExceptionFilter {

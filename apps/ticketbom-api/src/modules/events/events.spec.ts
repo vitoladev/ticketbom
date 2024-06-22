@@ -7,7 +7,7 @@ import { faker } from '@faker-js/faker';
 import { EventEntity, EventStatus } from './entities/event.entity';
 import { EventsService } from './events.service';
 import { randomUUID } from 'crypto';
-import { setupTestAppConfig, setupTestModuleFixture } from '../../test';
+import { setupTestAppConfig, setupTestModuleFixture } from '../../../test';
 
 const eventFactory = (): EventEntity => ({
   title: faker.lorem.words(3),

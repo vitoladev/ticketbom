@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 
-import { DrizzlePGModule } from '../common/drizzle/drizzle.module';
-import { UsersModule } from '../users/users.module';
-import { EventsModule } from '../events/events.module';
-import { TicketsModule } from '../tickets/tickets.module';
+import { DrizzlePGModule } from '@common/drizzle/drizzle.module';
+import { UsersModule } from '@modules/users/users.module';
+import { EventsModule } from '@modules/events/events.module';
+import { TicketsModule } from '@modules/tickets/tickets.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
-import { configurationFn, validateEnvConfig } from '../common/config';
-import { CatchAllExceptionFilter } from '../common/filters/catch-all-exception.filter';
-import { HealthModule } from '../health/health.module';
+import { configurationFn, validateEnvConfig } from '@common/config';
+import { CatchAllExceptionFilter } from '@common/filters/catch-all-exception.filter';
+import { HealthModule } from './health/health.module';
 import { GracefulShutdownModule } from 'nestjs-graceful-shutdown';
 
 @Module({

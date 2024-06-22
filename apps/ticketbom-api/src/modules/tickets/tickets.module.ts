@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { TicketsController } from './tickets.controller';
-import { PaymentsModule } from '../payments/payments.module';
+import { PaymentsModule } from '../../payments/payments.module';
 import { TicketsRepositoryProvider } from './tickets.repository';
 
 @Module({
@@ -11,5 +11,6 @@ import { TicketsRepositoryProvider } from './tickets.repository';
     TicketsRepositoryProvider,
     TicketsService,
   ],
+  exports: [TicketsService],
 })
 export class TicketsModule {}
