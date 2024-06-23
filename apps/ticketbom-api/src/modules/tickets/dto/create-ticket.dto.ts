@@ -1,8 +1,13 @@
+import { convertFullAmountToCents } from '@common/utils/money';
 import { ApiProperty } from '@nestjs/swagger';
+import { TicketStatus } from '@ticketbom/database';
+import { Transform } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsNumber,
+  IsPositive,
   IsString,
   IsUUID,
   MaxLength,
@@ -23,17 +28,22 @@ export class CreateTicketDto {
   eventId: string;
 
   @IsNotEmpty()
-  @IsInt()
-  @ApiProperty()
+  @IsNumber()
+  @IsPositive()
+  @Transform(({ value }) => convertFullAmountToCents(value), {
+    toClassOnly: true,
+  })
+  @ApiProperty({ format: 'float32', example: 500 })
   price: number;
 
   @IsNotEmpty()
   @IsInt()
-  @ApiProperty()
+  @IsPositive()
+  @ApiProperty({ format: 'int32', example: 100 })
   quantityTotal: number;
 
   @IsNotEmpty()
-  @ApiProperty({ enum: ['AVAILABLE', 'SOLD_OUT', 'CANCELLED'] })
-  @IsEnum(['AVAILABLE', 'SOLD_OUT', 'CANCELLED'])
-  status: 'AVAILABLE' | 'SOLD_OUT' | 'CANCELLED';
+  @ApiProperty({ enum: TicketStatus })
+  @IsEnum(TicketStatus)
+  status: TicketStatus;
 }

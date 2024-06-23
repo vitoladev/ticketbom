@@ -5,7 +5,8 @@ import { Cache } from 'cache-manager';
 import { ITicketsRepository } from './tickets.repository';
 import { DrizzleTransactionScope, EventEntity } from '@ticketbom/database';
 import { TicketIsNotAvailableException } from './tickets.exceptions';
-import { convertFullAmountToCents } from '@common/utils/money';
+import { TicketDto } from './dto/ticket.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class TicketsService {
@@ -14,14 +15,14 @@ export class TicketsService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
-  async create(createTicketDto: CreateTicketDto) {
+  async create(createTicketDto: CreateTicketDto): Promise<TicketDto> {
     // TODO: Send to SQS to create a ticket
-    return this.ticketsRepository.withTransaction(async (tx) => {
+    const ticket = await this.ticketsRepository.withTransaction(async (tx) => {
       const ticket = await this.ticketsRepository.create(
         {
           title: createTicketDto.title,
-          status: 'AVAILABLE',
-          price: convertFullAmountToCents(createTicketDto.price),
+          status: createTicketDto.status,
+          price: createTicketDto.price,
           eventId: createTicketDto.eventId,
           quantityTotal: createTicketDto.quantityTotal,
           quantityAvailable: createTicketDto.quantityTotal,
@@ -33,6 +34,8 @@ export class TicketsService {
       await this.cacheManager.set(`ticket:${ticket.id}`, ticket);
       return ticket;
     });
+
+    return plainToInstance(TicketDto, ticket);
   }
 
   async updateTicketQuantityAction(
@@ -68,7 +71,9 @@ export class TicketsService {
   }
 
   async findManyByEventId(eventId: string) {
-    const cachedData = await this.cacheManager.get<EventEntity[]>(`tickets:event:${eventId}`);
+    const cachedData = await this.cacheManager.get<EventEntity[]>(
+      `tickets:event:${eventId}`
+    );
     if (cachedData) return cachedData;
 
     const tickets = await this.ticketsRepository.findByEventId(eventId);

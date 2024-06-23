@@ -3,8 +3,12 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger, ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -17,9 +21,17 @@ import { CatchAllExceptionFilter } from '@common/filters/catch-all-exception.fil
 import { setupGracefulShutdown } from 'nestjs-graceful-shutdown';
 
 async function bootstrap() {
+  const isTestOrCIEnv =
+    process.env.NODE_ENV === 'test' ||
+    process.env.CI === 'true' ||
+    process.env.NODE_ENV === 'ci';
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true })
+    new FastifyAdapter({ logger: !isTestOrCIEnv }),
+    {
+      logger: !isTestOrCIEnv ? ['error', 'warn', 'log', 'verbose'] : false,
+    }
   );
   await app.register(fastifyHelmet);
 
@@ -30,6 +42,8 @@ async function bootstrap() {
 
   const globalPrefix = API_PREFIX;
   app.enableCors();
+  // Use ClassSerializerInterceptor to automatically apply transformations
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new CatchAllExceptionFilter());
   app.setGlobalPrefix(globalPrefix);

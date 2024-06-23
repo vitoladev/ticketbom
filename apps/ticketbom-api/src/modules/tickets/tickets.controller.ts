@@ -7,11 +7,16 @@ import {
   HttpCode,
   Param,
   Post,
+  ParseUUIDPipe,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { TicketDto } from './dto/ticket.dto';
 
+@ApiTags('tickets')
 @Controller('tickets')
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
@@ -19,20 +24,30 @@ export class TicketsController {
   @Post()
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'Event created',
+    description: 'Ticket created',
+    type: TicketDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
+    description: 'Invalid request',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Ticket with the same title and event already exists',
   })
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createTicketDto: CreateTicketDto) {
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async create(@Body() createTicketDto: CreateTicketDto): Promise<TicketDto> {
     return this.ticketsService.create(createTicketDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.ticketsService.findOne(id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.ticketsService.remove(id);
   }
 }
