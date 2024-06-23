@@ -26,7 +26,7 @@ export class CreateEventDto {
   @IsNotEmpty()
   @IsDateString()
   @Validate(IsFutureDateString, { message: 'Date must be in the future' })
-  @ApiProperty()
+  @ApiProperty({ type: String, format: 'date-time' })
   date: string;
 
   @IsNotEmpty()
