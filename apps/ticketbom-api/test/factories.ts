@@ -3,7 +3,7 @@ import {
   EventStatus,
   TicketEntity,
   TicketStatus,
-} from '../../../libs/database/src';
+} from '@ticketbom/database';
 import { faker } from '@faker-js/faker';
 
 export type EventFactoryEntity = Omit<
