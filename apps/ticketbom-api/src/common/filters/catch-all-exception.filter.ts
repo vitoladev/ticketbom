@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { EventAlreadyExistsException } from '@modules/events/events.exceptions';
+import { handlePostgresError, isPostgresError } from '@common/utils/errors';
 
 @Catch()
 export class CatchAllExceptionFilter implements ExceptionFilter {
@@ -16,7 +16,6 @@ export class CatchAllExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<FastifyRequest>();
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
-
       const isInternal = status === 500;
       if (isInternal) {
         Logger.error(exception.message, exception.stack, 'InternalServerError');
@@ -27,25 +26,20 @@ export class CatchAllExceptionFilter implements ExceptionFilter {
         });
       }
 
-      const badRequestResponse = exception.getResponse();
+      const errorResponse = exception.getResponse();
+      if (typeof errorResponse === 'string') {
+        return response.status(status).send({
+          statusCode: status,
+          message: errorResponse,
+          timestamp: new Date().toISOString(),
+        });
+      }
 
-      return response.status(status).send(badRequestResponse);
+      return response.status(status).send(errorResponse);
     }
 
-    if (
-      exception instanceof Error &&
-      exception.message.includes(
-        'duplicate key value violates unique constraint'
-      )
-    ) {
-      const isEvent = request.url.includes('events');
-      if (isEvent) throw new EventAlreadyExistsException(exception);
-
-      response.status(409).send({
-        statusCode: 409,
-        message: 'Conflict',
-        timestamp: new Date().toISOString(),
-      });
+    if (isPostgresError(exception)) {
+      handlePostgresError(exception, request, response);
     }
 
     if (exception instanceof Error) {
