@@ -3,6 +3,7 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
+  Logger,
 } from '@nestjs/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { EventAlreadyExistsException } from '@modules/events/events.exceptions';
@@ -18,6 +19,7 @@ export class CatchAllExceptionFilter implements ExceptionFilter {
 
       const isInternal = status === 500;
       if (isInternal) {
+        Logger.error(exception.message, exception.stack, 'InternalServerError');
         return response.status(status).send({
           statusCode: status,
           message: 'Internal Server Error',
@@ -44,6 +46,14 @@ export class CatchAllExceptionFilter implements ExceptionFilter {
         message: 'Conflict',
         timestamp: new Date().toISOString(),
       });
+    }
+
+    if (exception instanceof Error) {
+      Logger.error(
+        exception.message,
+        exception.stack,
+        'UnknownInternalServerError'
+      );
     }
 
     response.status(500).send({
