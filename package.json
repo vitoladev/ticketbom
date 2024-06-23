@@ -50,7 +50,7 @@
     "date-fns": "^3.6.0",
     "drizzle-orm": "^0.31.2",
     "http-terminator": "^3.2.0",
-    "mercadopago": "^2.0.9",
+    "mercadopago": "^2.0.10",
     "nestjs-graceful-shutdown": "^1.0.1",
     "next": "^14.2.3",
     "next-auth": "^5.0.0-beta.19",
