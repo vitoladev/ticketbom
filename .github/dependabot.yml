@@ -11,9 +11,16 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-
+    assignees:
+      - "vitoladev"
+    reviewers:
+      - "vitoladev"
   # Maintain dependencies for npm
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    assignees:
+      - "vitoladev"
+    reviewers:
+      - "vitoladev"
