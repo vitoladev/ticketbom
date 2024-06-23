@@ -46,7 +46,7 @@ export class OrdersRepository
   extends BaseRepository<typeof ticketOrders._.config>
   implements IOrdersRepository
 {
-  constructor(@Inject('DB_DEV') db: DrizzleDatabase) {
+  constructor(@Inject(DrizzleDatabase) db: DrizzleDatabase) {
     super(db, 'ticket_orders');
   }
 

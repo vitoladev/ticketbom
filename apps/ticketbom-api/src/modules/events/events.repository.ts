@@ -21,7 +21,7 @@ export const IEventsRepository = Symbol('IEventsRepository');
 
 @Injectable()
 class EventsRepository extends BaseRepository<typeof events._.config> {
-  constructor(@Inject('DB_DEV') db: DrizzleDatabase) {
+  constructor(@Inject(DrizzleDatabase) db: DrizzleDatabase) {
     super(db, 'events');
   }
 

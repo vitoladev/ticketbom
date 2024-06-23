@@ -8,7 +8,7 @@ import { DrizzleDatabase, pingDrizzleDb } from '@ticketbom/database';
 
 @Injectable()
 export class DatabaseHealthIndicator extends HealthIndicator {
-  constructor(@Inject('DB_DEV') private db: DrizzleDatabase) {
+  constructor(@Inject(DrizzleDatabase) private db: DrizzleDatabase) {
     super();
   }
 

@@ -22,7 +22,7 @@ export interface ITicketsRepository
     },
     tx?: DrizzleTransactionScope
   ): Promise<void>;
-  findByEventId(eventId: string): Promise<TicketEntity>;
+  findByEventId(eventId: string): Promise<TicketEntity[]>;
   findByIds(
     ids: string[],
     tx?: DrizzleTransactionScope
@@ -36,7 +36,7 @@ class TicketsRepository
   extends BaseRepository<typeof ticketsTable._.config>
   implements ITicketsRepository
 {
-  constructor(@Inject('DB_DEV') db: DrizzleDatabase) {
+  constructor(@Inject(DrizzleDatabase) db: DrizzleDatabase) {
     super(db, 'tickets');
   }
 
@@ -75,15 +75,14 @@ class TicketsRepository
     );
   }
 
-  async findByEventId(eventId: string): Promise<TicketEntity> {
-    const ticket = await this.db
+  async findByEventId(eventId: string): Promise<TicketEntity[]> {
+    const tickets = await this.db
       .select()
       .from(ticketsTable)
       .where(eq(ticketsTable.eventId, eventId))
-      .execute()
-      .then((res) => res[0]);
+      .execute();
 
-    return ticket;
+    return tickets;
   }
 
   async findByIds(ids: string[], tx?: DrizzleTransactionScope) {

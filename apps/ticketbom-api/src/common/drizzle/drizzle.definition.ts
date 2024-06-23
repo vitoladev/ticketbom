@@ -1,5 +1,6 @@
 import { ConfigurableModuleBuilder } from '@nestjs/common';
 import { DrizzlePGConfig } from './drizzle.interface';
+import { DrizzleDatabase } from '@ticketbom/database';
 
 export const {
   ConfigurableModuleClass,
@@ -9,7 +10,7 @@ export const {
 } = new ConfigurableModuleBuilder<DrizzlePGConfig>()
   .setExtras(
     {
-      tag: 'default',
+      tag: DrizzleDatabase,
     },
     (definition, extras) => ({
       ...definition,

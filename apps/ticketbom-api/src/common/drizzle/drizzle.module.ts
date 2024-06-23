@@ -7,6 +7,7 @@ import {
 } from './drizzle.definition';
 import { DrizzlePGService } from './drizzle.service';
 import { DrizzlePGConfig } from './drizzle.interface';
+import { DrizzleDatabase } from '@ticketbom/database';
 
 @Global()
 export class DrizzlePGModule extends ConfigurableModuleClass {
@@ -18,7 +19,7 @@ export class DrizzlePGModule extends ConfigurableModuleClass {
         ...providers,
         DrizzlePGService,
         {
-          provide: options?.tag || 'default',
+          provide: DrizzleDatabase,
           useFactory: async (drizzleService: DrizzlePGService) => {
             return await drizzleService.getDrizzle(options);
           },
@@ -40,7 +41,7 @@ export class DrizzlePGModule extends ConfigurableModuleClass {
         ...providers,
         DrizzlePGService,
         {
-          provide: options?.tag || 'default',
+          provide: DrizzleDatabase,
           useFactory: async (
             drizzleService: DrizzlePGService,
             config: DrizzlePGConfig
@@ -50,7 +51,7 @@ export class DrizzlePGModule extends ConfigurableModuleClass {
           inject: [DrizzlePGService, MODULE_OPTIONS_TOKEN],
         },
       ],
-      exports: [...exports, options?.tag || 'default'],
+      exports: [...exports, DrizzleDatabase],
     };
   }
 }
