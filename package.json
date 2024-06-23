@@ -69,7 +69,7 @@
     "@faker-js/faker": "^8.4.1",
     "@nestjs/schematics": "^10.0.1",
     "@nestjs/testing": "^10.3.9",
-    "@nx/devkit": "19.0.1",
+    "@nx/devkit": "19.3.1",
     "@nx/eslint": "19.0.1",
     "@nx/eslint-plugin": "19.0.1",
     "@nx/jest": "19.0.1",
