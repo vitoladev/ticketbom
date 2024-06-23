@@ -2,33 +2,32 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { validateEnvConfig, configurationFn } from '../src/common/config';
 import { DrizzlePGModule } from '../src/common/drizzle/drizzle.module';
-import { CacheModule } from '@nestjs/cache-manager';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { ValidationPipe } from '@nestjs/common';
+import { Type, ValidationPipe } from '@nestjs/common';
 import { CatchAllExceptionFilter } from '../src/common/filters/catch-all-exception.filter';
+import { DrizzleDatabase } from '@ticketbom/database';
 
 export const setupTestModuleFixture = async (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  moduleToTest: any
+  modulesToTest: Type<any>[]
 ): Promise<TestingModule> => {
-  return await Test.createTestingModule({
-    imports: [
-      ConfigModule.forRoot({
-        validate: validateEnvConfig,
-        load: [configurationFn],
-        isGlobal: true,
+  const modules = [
+    ConfigModule.forRoot({
+      validate: validateEnvConfig,
+      load: [configurationFn],
+      isGlobal: true,
+    }),
+    DrizzlePGModule.registerAsync({
+      tag: DrizzleDatabase,
+      useFactory: () => ({
+        connection: 'client',
       }),
-      DrizzlePGModule.registerAsync({
-        tag: 'DB_DEV',
-        useFactory: () => ({
-          connection: 'client',
-        }),
-      }),
-      CacheModule.register({
-        isGlobal: true,
-      }),
-      moduleToTest,
-    ],
+    }),
+    ...modulesToTest,
+  ];
+
+  return Test.createTestingModule({
+    imports: modules,
   }).compile();
 };
 

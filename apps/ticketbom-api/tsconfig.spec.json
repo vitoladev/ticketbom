@@ -3,7 +3,12 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "paths": {
+      "@common/*": ["apps/ticketbom-api/src/common/*"],
+      "@modules/*": ["apps/ticketbom-api/src/modules/*"],
+      "@ticketbom/database": ["libs/database/src/index.ts"]
+    }
   },
   "include": [
     "jest.config.ts",

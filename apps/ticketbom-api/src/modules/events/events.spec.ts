@@ -7,7 +7,11 @@ import { faker } from '@faker-js/faker';
 import { EventEntity, EventStatus } from './entities/event.entity';
 import { EventsService } from './events.service';
 import { randomUUID } from 'crypto';
-import { setupTestAppConfig, setupTestModuleFixture } from '../../../test';
+import {
+  setupTestAppConfig,
+  setupTestModuleFixture,
+} from '../../../test';
+import { TicketsModule } from '@modules/tickets/tickets.module';
 
 const eventFactory = (): EventEntity => ({
   title: faker.lorem.words(3),
@@ -24,11 +28,14 @@ const eventFactory = (): EventEntity => ({
 describe('Events', () => {
   let app: NestFastifyApplication;
   beforeAll(async () => {
-    const moduleFixture = await setupTestModuleFixture(EventsModule);
-
+    const moduleFixture = await setupTestModuleFixture([
+      TicketsModule,
+      EventsModule,
+    ]);
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
       new FastifyAdapter()
     );
+
     await setupTestAppConfig(app);
   });
 
