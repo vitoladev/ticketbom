@@ -3,9 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { validateEnvConfig, configurationFn } from '../src/common/config';
 import { DrizzlePGModule } from '../src/common/drizzle/drizzle.module';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { Type, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, Type, ValidationPipe } from '@nestjs/common';
 import { CatchAllExceptionFilter } from '../src/common/filters/catch-all-exception.filter';
 import { DrizzleDatabase } from '@ticketbom/database';
+import { Reflector } from '@nestjs/core';
 
 export const setupTestModuleFixture = async (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,7 +35,5 @@ export const setupTestModuleFixture = async (
 export const setupTestAppConfig = async (app: NestFastifyApplication) => {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new CatchAllExceptionFilter());
-
-  await app.init();
-  await app.getHttpAdapter().getInstance().ready();
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 };
