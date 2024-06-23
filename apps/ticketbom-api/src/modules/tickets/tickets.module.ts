@@ -3,14 +3,12 @@ import { TicketsService } from './tickets.service';
 import { TicketsController } from './tickets.controller';
 import { PaymentsModule } from '../../payments/payments.module';
 import { TicketsRepositoryProvider } from './tickets.repository';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
-  imports: [PaymentsModule],
+  imports: [CacheModule.register(), PaymentsModule],
   controllers: [TicketsController],
-  providers: [
-    TicketsRepositoryProvider,
-    TicketsService,
-  ],
-  exports: [TicketsService],
+  providers: [TicketsRepositoryProvider, TicketsService],
+  exports: [TicketsRepositoryProvider, TicketsService],
 })
 export class TicketsModule {}

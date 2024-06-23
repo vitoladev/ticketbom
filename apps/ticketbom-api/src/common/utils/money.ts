@@ -1,3 +1,3 @@
-export const convertFullPriceToCents = (price: number) => price * 100;
+export const convertFullAmountToCents = (price: number) => price * 100;
 
-export const convertCentsToFullPrice = (price: number) => price / 100;
+export const convertCentsToFullAmount = (price: number) => price / 100;

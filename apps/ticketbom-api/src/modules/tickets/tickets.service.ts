@@ -3,8 +3,9 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ITicketsRepository } from './tickets.repository';
-import { DrizzleTransactionScope } from '@ticketbom/database';
+import { DrizzleTransactionScope, EventEntity } from '@ticketbom/database';
 import { TicketIsNotAvailableException } from './tickets.exceptions';
+import { convertFullAmountToCents } from '@common/utils/money';
 
 @Injectable()
 export class TicketsService {
@@ -20,7 +21,7 @@ export class TicketsService {
         {
           title: createTicketDto.title,
           status: 'AVAILABLE',
-          price: createTicketDto.price,
+          price: convertFullAmountToCents(createTicketDto.price),
           eventId: createTicketDto.eventId,
           quantityTotal: createTicketDto.quantityTotal,
           quantityAvailable: createTicketDto.quantityTotal,
@@ -67,7 +68,7 @@ export class TicketsService {
   }
 
   async findManyByEventId(eventId: string) {
-    const cachedData = await this.cacheManager.get(`tickets:event:${eventId}`);
+    const cachedData = await this.cacheManager.get<EventEntity[]>(`tickets:event:${eventId}`);
     if (cachedData) return cachedData;
 
     const tickets = await this.ticketsRepository.findByEventId(eventId);
