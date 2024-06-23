@@ -4,43 +4,35 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { faker } from '@faker-js/faker';
-import { EventEntity, EventStatus } from './entities/event.entity';
 import { EventsService } from './events.service';
 import { randomUUID } from 'crypto';
 import {
+  EventFactoryEntity,
+  eventFactory,
   setupTestAppConfig,
   setupTestModuleFixture,
 } from '../../../test';
 import { TicketsModule } from '@modules/tickets/tickets.module';
+import { TestingModule } from '@nestjs/testing';
 
-const eventFactory = (): EventEntity => ({
-  title: faker.lorem.words(3),
-  description: faker.lorem.paragraph(),
-  date: faker.date.future().toISOString(),
-  status: faker.helpers.arrayElement([
-    'UPCOMING',
-    'ONGOING',
-    'FINISHED',
-  ] as EventStatus[]),
-  location: faker.location.streetAddress(),
-});
-
-describe('Events', () => {
+describe('EventsModule', () => {
   let app: NestFastifyApplication;
+  let testModule: TestingModule;
   beforeAll(async () => {
-    const moduleFixture = await setupTestModuleFixture([
-      TicketsModule,
-      EventsModule,
-    ]);
-    app = moduleFixture.createNestApplication<NestFastifyApplication>(
+    testModule = await setupTestModuleFixture([TicketsModule, EventsModule]);
+    app = testModule.createNestApplication<NestFastifyApplication>(
       new FastifyAdapter()
     );
 
     await setupTestAppConfig(app);
+    await app.init();
+    await app.getHttpAdapter().getInstance().ready();
   });
 
   afterAll(async () => {
     await app.close();
+    await testModule.close();
+    console.log('Closed test Events module');
   });
 
   describe('/events (POST)', () => {
@@ -54,7 +46,7 @@ describe('Events', () => {
       });
 
       expect(response.statusCode).toBe(201);
-      expect(response.json()).toMatchObject<EventEntity>(eventInput);
+      expect(response.json()).toMatchObject<EventFactoryEntity>(eventInput);
     });
 
     it('should throw a validation error if required fields are missing', async () => {
@@ -113,7 +105,7 @@ describe('Events', () => {
       });
 
       expect(alreadyCreatedResponse.statusCode).toBe(201);
-      expect(alreadyCreatedResponse.json()).toMatchObject<EventEntity>(
+      expect(alreadyCreatedResponse.json()).toMatchObject<EventFactoryEntity>(
         eventInput
       );
 
@@ -158,7 +150,7 @@ describe('Events', () => {
       });
 
       expect(response.statusCode).toBe(200);
-      expect(response.json()).toMatchObject<EventEntity>(eventsInput);
+      expect(response.json()).toMatchObject<EventFactoryEntity>(eventsInput);
     });
 
     it('should return a 400 bad request error if id is invalid', async () => {

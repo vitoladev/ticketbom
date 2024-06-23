@@ -6,9 +6,9 @@ import {
   MinLength,
   Validate,
 } from 'class-validator';
-import { EventStatus } from '../entities/event.entity';
 import { IsFutureDateString } from '@common/validators/IsFutureDateString';
 import { ApiProperty } from '@nestjs/swagger';
+import { EventStatus } from '@ticketbom/database';
 
 export class CreateEventDto {
   @IsNotEmpty()
