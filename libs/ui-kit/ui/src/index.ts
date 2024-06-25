@@ -10,3 +10,4 @@ export * from './lib/ui/avatar';
 export * from './lib/ui/form';
 export * from './lib/ui/skeleton';
 export * from './lib/ui/table';
+export * from './lib/ui/dropdown-menu';
