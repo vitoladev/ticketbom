@@ -53,6 +53,8 @@ const EventPage: React.FC = () => {
               <CardTitle className="flex flex-center text-center">
                 Ingressos
               </CardTitle>
+              <Separator className="my-2" />
+
               {event?.tickets.length === 0 ? (
                 <CardDescription>Nenhum ingresso disponível</CardDescription>
               ) : (
@@ -96,7 +98,7 @@ const EventPage: React.FC = () => {
                       </article>
                     </article>
                   ))}
-                  <section className="flex flex-col justify-between items-center">
+                  <footer className="flex flex-col justify-between items-center">
                     <CardFooter className="flex justify-between w-full">
                       <div className="flex items-center">
                         <strong>Total:</strong>
@@ -110,7 +112,7 @@ const EventPage: React.FC = () => {
                         <Link href="/order">Comprar</Link>
                       </Button>
                     </div>
-                  </section>
+                  </footer>
                 </>
               )}
             </CardContent>

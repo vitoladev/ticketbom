@@ -19,7 +19,7 @@ const Events: React.FC = () => {
       <CardHeader>
         <CardTitle className="text-center mb-2">Events</CardTitle>
       </CardHeader>
-      <CardContent className="grid grid-cols-3 gap-4">
+      <CardContent className="grid grid-cols-1 gap-4">
         {isPending && <SkeletonCard />}
         {isError && <span>Error: {error.message}</span>}
         {data?.map((event) => (
