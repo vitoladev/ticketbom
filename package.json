@@ -86,7 +86,7 @@
     "@nx/node": "19.0.1",
     "@nx/playwright": "19.0.1",
     "@nx/react": "19.0.1",
-    "@nx/web": "19.0.1",
+    "@nx/web": "19.5.1",
     "@nx/webpack": "19.0.1",
     "@nx/workspace": "19.0.1",
     "@playwright/test": "^1.36.0",
