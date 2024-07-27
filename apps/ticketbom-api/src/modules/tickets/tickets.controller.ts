@@ -8,8 +8,6 @@ import {
   Param,
   Post,
   ParseUUIDPipe,
-  ValidationPipe,
-  UsePipes,
 } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
@@ -36,7 +34,6 @@ export class TicketsController {
     description: 'Ticket with the same title and event already exists',
   })
   @HttpCode(HttpStatus.CREATED)
-  @UsePipes(new ValidationPipe({ transform: true }))
   async create(@Body() createTicketDto: CreateTicketDto): Promise<TicketDto> {
     return this.ticketsService.create(createTicketDto);
   }

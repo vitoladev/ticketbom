@@ -74,13 +74,13 @@ export class TicketsService {
     const cachedData = await this.cacheManager.get<EventEntity[]>(
       `tickets:event:${eventId}`
     );
-    if (cachedData) return cachedData;
+    if (cachedData) return plainToInstance(TicketDto, cachedData);
 
     const tickets = await this.ticketsRepository.findByEventId(eventId);
 
     await this.cacheManager.set(`tickets:event:${eventId}`, tickets);
 
-    return tickets;
+    return plainToInstance(TicketDto, tickets);
   }
 
   async findByIds(ids: string[], tx?: DrizzleTransactionScope) {
