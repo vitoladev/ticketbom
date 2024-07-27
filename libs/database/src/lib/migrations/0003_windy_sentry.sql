@@ -1,1 +1,0 @@
-ALTER TABLE "tickets" ADD COLUMN "payment_id" varchar(256) NOT NULL;

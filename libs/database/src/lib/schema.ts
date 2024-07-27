@@ -28,9 +28,9 @@ export enum EventStatus {
 }
 
 const eventStatusEnum = pgEnum('event_status', [
-  EventStatus.UPCOMING,
-  EventStatus.ONGOING,
-  EventStatus.FINISHED,
+  'UPCOMING',
+  'ONGOING',
+  'FINISHED',
 ]);
 
 export enum TicketStatus {
@@ -39,13 +39,13 @@ export enum TicketStatus {
   CANCELLED = 'CANCELLED',
 }
 
-const ticketStatusEnum = pgEnum('ticket_status', [
+export const ticketStatusEnum = pgEnum('ticket_status', [
   TicketStatus.AVAILABLE,
   TicketStatus.SOLD_OUT,
   TicketStatus.CANCELLED,
 ]);
 
-const ticketOrderStatusEnum = pgEnum('ticket_order_status', [
+export const ticketOrderStatusEnum = pgEnum('ticket_order_status', [
   'RESERVED',
   'PAID',
   'PENDING',
@@ -61,7 +61,7 @@ export const events = pgTable(
     title: varchar('title', { length: 50 }).unique().notNull(),
     description: text('description'),
     date: varchar('date'),
-    status: eventStatusEnum('status').default(EventStatus.UPCOMING),
+    status: varchar('status').default(EventStatus.UPCOMING).notNull(),
     location: varchar('location', { length: 256 }),
     organizerId: uuid('organizer_id').notNull(),
     createdAt: date('created_at').defaultNow(),
@@ -133,12 +133,12 @@ export const ticketOrders = pgTable('ticket_orders', {
   id: uuid('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  paymentIntentId: uuid('payment_intent_id').notNull(),
+  paymentIntentId: text('payment_intent_id').notNull(),
   userId: uuid('user_id')
     .notNull()
     .references(() => users.id),
   status: ticketOrderStatusEnum('status').default('PENDING').notNull(),
-  expiresAt: date('expires_at').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
   createdAt: date('created_at').defaultNow(),
   updatedAt: date('updated_at')
     .defaultNow()
@@ -165,11 +165,11 @@ export const ticketOrderDetails = pgTable('ticket_order_details', {
   ticketId: uuid('ticket_id')
     .notNull()
     .references(() => tickets.id),
+  priceToPay: integer('price_to_pay').notNull(),
   quantity: integer('quantity').notNull(),
 });
 
 export type TicketOrderDetailEntity = typeof ticketOrderDetails.$inferSelect;
-
 
 export const tables = {
   users,
