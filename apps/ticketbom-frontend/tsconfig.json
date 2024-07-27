@@ -19,7 +19,11 @@
     ]
   },
   "paths": {
-    "@/*": ["./*"]
+    "@/*": ["./*"],
+    "@providers/*": ["./src/providers/*"],
+    "@components/*": ["./src/components/*"],
+    "@hooks/*": ["./src/hooks/*"],
+    "@lib/*": ["./src/lib/*"]
   },
   "include": [
     "**/*.ts",
