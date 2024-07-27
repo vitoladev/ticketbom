@@ -1,3 +1,4 @@
+import { convertCentsToFullAmount } from '@common/utils/money';
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { MercadoPagoConfig, Preference } from 'mercadopago';
@@ -33,7 +34,7 @@ export class PaymentsService {
         items: items.map((item) => ({
           id: item.id,
           title: item.title,
-          unit_price: item.price,
+          unit_price: convertCentsToFullAmount(item.price),
           currency_id: 'BRL',
           quantity: item.quantity,
         }))
