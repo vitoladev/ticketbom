@@ -13,18 +13,20 @@
     },
     "ghcr.io/devcontainers-contrib/features/node-asdf:0": {}
   },
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "GitHub.copilot",
-        "GitHub.copilot-chat",
-        "nrwl.angular-console",
-        "firsttris.vscode-jest-runner",
-        "esbenp.prettier-vscode",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				"nrwl.angular-console",
+				"firsttris.vscode-jest-runner",
+				"esbenp.prettier-vscode",
+				"bradlc.vscode-tailwindcss",
+				"austenc.tailwind-docs",
         "idered.npm"
-      ]
-    }
-  },
+			]
+		}
+	},
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [3000, 5432]
