@@ -9,7 +9,7 @@ import { faker } from '@faker-js/faker';
 export type EventFactoryEntity = Omit<
   EventEntity,
   'id' | 'createdAt' | 'updatedAt' | 'organizerId'
->;
+> & { status: EventStatus};
 
 export const eventFactory = (): EventFactoryEntity => ({
   title: faker.lorem.words(3),
