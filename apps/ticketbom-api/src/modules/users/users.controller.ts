@@ -24,8 +24,14 @@ export class UsersController {
 
   @Get('me')
   @Authentication()
-  me(@CognitoUser() user) {
+  me(@CognitoUser(['sub', 'email', 'birthdate', 'email_verified', 'picture', 'exp']) user) {
     return user;
+  }
+
+  @Get()
+  @Authentication()
+  findAll() {
+    return this.usersService.findAll();
   }
 
   // @Get()

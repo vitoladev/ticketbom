@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { CognitoAuthModule } from '@nestjs-cognito/auth';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 
 @Module({
   imports: [
@@ -19,6 +20,16 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [
+    {
+      provide: CognitoIdentityProviderClient,
+      useFactory: (configService: ConfigService) =>
+        new CognitoIdentityProviderClient({
+          region: configService.get<string>('cognito.region'),
+        }),
+      inject: [ConfigService],
+    },
+    UsersService,
+  ],
 })
 export class UsersModule {}
